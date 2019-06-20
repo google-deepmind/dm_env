@@ -20,12 +20,12 @@ from __future__ import print_function
 
 from dm_env import _environment
 
-TimeStep = _environment.TimeStep
-StepType = _environment.StepType
 Base = _environment.Base
+StepType = _environment.StepType
+TimeStep = _environment.TimeStep
 
 # Helper functions for creating TimeStep namedtuples with default settings.
 restart = _environment.restart
+termination = _environment.termination
 transition = _environment.transition
 truncation = _environment.truncation
-termination = _environment.termination
