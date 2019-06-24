@@ -20,7 +20,7 @@ from __future__ import print_function
 
 from dm_env import _environment
 
-Base = _environment.Base
+Environment = _environment.Environment
 StepType = _environment.StepType
 TimeStep = _environment.TimeStep
 

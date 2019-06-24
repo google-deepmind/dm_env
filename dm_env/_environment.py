@@ -89,7 +89,7 @@ class StepType(enum.IntEnum):
 
 
 @six.add_metaclass(abc.ABCMeta)
-class Base(object):
+class Environment(object):
   """Abstract base class for Python RL environments.
 
   Observations and valid actions are described with `Array` specs, defined in
