@@ -29,7 +29,7 @@ import six
 from six.moves import cPickle as pickle
 
 
-class ArrayTest(absltest.TestCase):
+class ArrayTest(parameterized.TestCase):
 
   def testShapeTypeError(self):
     with self.assertRaises(TypeError):
@@ -90,17 +90,33 @@ class ArrayTest(absltest.TestCase):
     with six.assertRaisesRegex(self, TypeError, "unhashable type"):
       hash(spec)
 
-  def testValidateDtype(self):
+  @parameterized.parameters(
+      dict(value=np.zeros((1, 2), dtype=np.int32), is_valid=True),
+      dict(value=np.zeros((1, 2), dtype=np.float32), is_valid=False),
+  )
+  def testValidateDtype(self, value, is_valid):
     spec = specs.Array((1, 2), np.int32)
-    spec.validate(np.zeros((1, 2), dtype=np.int32))
-    with self.assertRaises(ValueError):
-      spec.validate(np.zeros((1, 2), dtype=np.float32))
+    if is_valid:  # Should not raise any exception.
+      spec.validate(value)
+    else:
+      with self.assertRaisesWithLiteralMatch(
+          ValueError,
+          specs._INVALID_DTYPE % (spec.dtype, value.dtype)):
+        spec.validate(value)
 
-  def testValidateShape(self):
+  @parameterized.parameters(
+      dict(value=np.zeros((1, 2), dtype=np.int32), is_valid=True),
+      dict(value=np.zeros((1, 2, 3), dtype=np.int32), is_valid=False),
+  )
+  def testValidateShape(self, value, is_valid):
     spec = specs.Array((1, 2), np.int32)
-    spec.validate(np.zeros((1, 2), dtype=np.int32))
-    with self.assertRaises(ValueError):
-      spec.validate(np.zeros((1, 2, 3), dtype=np.int32))
+    if is_valid:  # Should not raise any exception.
+      spec.validate(value)
+    else:
+      with self.assertRaisesWithLiteralMatch(
+          ValueError,
+          specs._INVALID_SHAPE % (spec.shape, value.shape)):
+        spec.validate(value)
 
   def testGenerateValue(self):
     spec = specs.Array((1, 2), np.int32)
@@ -112,7 +128,7 @@ class ArrayTest(absltest.TestCase):
     self.assertEqual(pickle.loads(pickle.dumps(desc)), desc)
 
 
-class BoundedArrayTest(absltest.TestCase):
+class BoundedArrayTest(parameterized.TestCase):
 
   def testInvalidMinimum(self):
     with six.assertRaisesRegex(self, ValueError, "not compatible"):
@@ -182,13 +198,20 @@ class BoundedArrayTest(absltest.TestCase):
     self.assertIn("101", as_string)
     self.assertIn("73", as_string)
 
-  def testValidateBounds(self):
+  @parameterized.parameters(
+      dict(value=np.array([[5, 6], [8, 10]], dtype=np.int32), is_valid=True),
+      dict(value=np.array([[5, 6], [8, 11]], dtype=np.int32), is_valid=False),
+      dict(value=np.array([[4, 6], [8, 10]], dtype=np.int32), is_valid=False),
+  )
+  def testValidateBounds(self, value, is_valid):
     spec = specs.BoundedArray((2, 2), np.int32, minimum=5, maximum=10)
-    spec.validate(np.array([[5, 6], [8, 10]], dtype=np.int32))
-    with self.assertRaises(ValueError):
-      spec.validate(np.array([[5, 6], [8, 11]], dtype=np.int32))
-    with self.assertRaises(ValueError):
-      spec.validate(np.array([[4, 6], [8, 10]], dtype=np.int32))
+    if is_valid:  # Should not raise any exception.
+      spec.validate(value)
+    else:
+      with self.assertRaisesWithLiteralMatch(
+          ValueError,
+          specs._OUT_OF_BOUNDS % (spec.minimum, value, spec.maximum)):
+        spec.validate(value)
 
   def testValidateReturnsValue(self):
     spec = specs.BoundedArray([1], np.int32, minimum=0, maximum=1)

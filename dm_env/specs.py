@@ -20,6 +20,10 @@ from __future__ import print_function
 
 import numpy as np
 
+_INVALID_SHAPE = 'Expected shape %r but found %r'
+_INVALID_DTYPE = 'Expected dtype %r but found %r'
+_OUT_OF_BOUNDS = 'Values were not all within bounds %s <= %s <= %s'
+
 
 class Array(object):
   """Describes a numpy array or scalar shape and dtype.
@@ -97,11 +101,9 @@ class Array(object):
     """
     value = np.asarray(value)
     if value.shape != self.shape:
-      self._fail_validation(
-          'Expected shape %r but found %r', self.shape, value.shape)
+      self._fail_validation(_INVALID_SHAPE, self.shape, value.shape)
     if value.dtype != self.dtype:
-      self._fail_validation(
-          'Expected dtype %s but found %s', self.dtype, value.dtype)
+      self._fail_validation(_INVALID_DTYPE, self.dtype, value.dtype)
     return value
 
   def generate_value(self):
@@ -204,9 +206,7 @@ class BoundedArray(Array):
     value = np.asarray(value)
     super(BoundedArray, self).validate(value)
     if (value < self.minimum).any() or (value > self.maximum).any():
-      self._fail_validation(
-          'Values were not all within bounds %s <= value <= %s',
-          self.minimum, self.maximum)
+      self._fail_validation(_OUT_OF_BOUNDS, self.minimum, value, self.maximum)
     return value
 
   def generate_value(self):
