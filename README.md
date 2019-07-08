@@ -10,6 +10,9 @@ environments. It consists of the following core components:
     format of the actions consumed by an environment, as well as the
     observations, rewards, and discounts it returns.
 
+Please see the documentation [here][api_docs] for more information about the
+semantics of the environment interface and how to use it.
+
 ## Installation
 
 `dm_env` can be installed directly from our GitHub repository using `pip`:
@@ -23,3 +26,5 @@ or alternatively by checking out a local copy of our repository and running:
 ```bash
 pip install /path/to/local/dm_env/
 ```
+
+[api_docs]: docs/index.md

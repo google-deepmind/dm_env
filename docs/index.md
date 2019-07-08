@@ -24,7 +24,8 @@ sequence. This means the environment will ignore the next `action` after a
 
 As well as `step()`, each environment implements a `reset()` method. This takes
 no arguments, forces the start of a new sequence and returns the first
-`TimeStep`. See the [run-loop](#loops) examples for more details.
+`TimeStep`. See the [run loop samples](#run-loop-samples) below for more
+details.
 
 NOTE: The `discount` does *not* determine when a sequence ends. The `discount`
 may be 0 in the middle of a sequence and ≥0 at the end of a sequence.
@@ -70,7 +71,7 @@ creator of the agent, but it does mean that the aforementioned two ways to
 model a termination of the prediction do not necessarily correspond to the same
 agent behaviour.
 
-## Run loop samples {#loops}
+## Run loop samples
 
 Here we show some sample run loops for using an environment with an agent class
 that implements a `step(timestep)` method.
