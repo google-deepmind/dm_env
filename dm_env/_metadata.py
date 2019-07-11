@@ -13,20 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""A Python interface for reinforcement learning environments."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+"""Package metadata for dm_env.
 
-from dm_env import _environment
-from dm_env._metadata import __version__
+This is kept in a separate module so that it can be imported from setup.py, at
+a time when dm_env's dependencies may not have been installed yet.
+"""
 
-Environment = _environment.Environment
-StepType = _environment.StepType
-TimeStep = _environment.TimeStep
-
-# Helper functions for creating TimeStep namedtuples with default settings.
-restart = _environment.restart
-termination = _environment.termination
-transition = _environment.transition
-truncation = _environment.truncation
+__version__ = '1.0a0'  # https://www.python.org/dev/peps/pep-0440/

@@ -20,11 +20,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import imp
 from setuptools import find_packages
 from setuptools import setup
 
 setup(
     name='dm_env',
+    version=imp.load_source('_metadata', 'dm_env/_metadata.py').__version__,
     description='A Python interface for Reinforcement Learning environments.',
     author='DeepMind',
     license='Apache License, Version 2.0',
