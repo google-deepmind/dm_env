@@ -9,6 +9,8 @@ environments. It consists of the following core components:
 *   `dm_env.specs`: A module containing primitives that are used to describe the
     format of the actions consumed by an environment, as well as the
     observations, rewards, and discounts it returns.
+*   `dm_env.test_utils`: Tools for testing whether concrete environment
+    implementations conform to the `dm_env.Environment` interface.
 
 Please see the documentation [here][api_docs] for more information about the
 semantics of the environment interface and how to use it.
