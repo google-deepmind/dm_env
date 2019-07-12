@@ -31,14 +31,14 @@ setup(
     author='DeepMind',
     license='Apache License, Version 2.0',
     keywords='reinforcement-learning python machine learning',
-    packages=find_packages(),
+    packages=find_packages(exclude=['examples']),
     install_requires=[
+        'absl-py',
         'enum34',
         'numpy',
         'six',
     ],
     tests_require=[
-        'absl-py',
         'nose',
     ],
     test_suite='nose.collector',
