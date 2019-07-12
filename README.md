@@ -13,7 +13,9 @@ environments. It consists of the following core components:
     implementations conform to the `dm_env.Environment` interface.
 
 Please see the documentation [here][api_docs] for more information about the
-semantics of the environment interface and how to use it.
+semantics of the environment interface and how to use it. The [examples]
+subdirectory also contains illustrative examples of RL environments implemented
+using the `dm_env` interface.
 
 ## Installation
 
@@ -30,3 +32,4 @@ pip install /path/to/local/dm_env/
 ```
 
 [api_docs]: docs/index.md
+[examples]: examples/
