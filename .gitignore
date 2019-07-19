@@ -4,3 +4,4 @@
 # Ignore directories created during the build/installation process
 *.egg-info/
 build/
+dist/
