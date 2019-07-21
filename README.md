@@ -19,7 +19,13 @@ using the `dm_env` interface.
 
 ## Installation
 
-`dm_env` can be installed directly from our GitHub repository using `pip`:
+`dm_env` can be installed from PyPI using `pip`:
+
+```bash
+pip install dm_env
+```
+
+You can also install it directly from our GitHub repository using `pip`:
 
 ```bash
 pip install git+git://github.com/deepmind/dm_env.git
