@@ -18,11 +18,21 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import sys
 import numpy as np
+
+# pylint: disable=g-import-not-at-top
+if sys.version_info >= (3, 3):  # `inspect.signature` was added in Python 3.3
+  import inspect
+else:
+  import funcsigs as inspect
+# pylint: enable=g-import-not-at-top
 
 _INVALID_SHAPE = 'Expected shape %r but found %r'
 _INVALID_DTYPE = 'Expected dtype %r but found %r'
 _OUT_OF_BOUNDS = 'Values were not all within bounds %s <= %s <= %s'
+_VAR_ARGS_NOT_ALLOWED = 'Spec subclasses must not accept *args.'
+_VAR_KWARGS_NOT_ALLOWED = 'Spec subclasses must not accept **kwargs.'
 
 
 class Array(object):
@@ -109,6 +119,34 @@ class Array(object):
   def generate_value(self):
     """Generate a test value which conforms to this spec."""
     return np.zeros(shape=self.shape, dtype=self.dtype)
+
+  def _get_constructor_kwargs(self):
+    """Returns constructor kwargs for instantiating a new copy of this spec."""
+    # Get the names and kinds of the constructor parameters.
+    params = inspect.signature(type(self)).parameters
+    # __init__ must not accept *args or **kwargs, since otherwise we won't be
+    # able to infer what the corresponding attribute names are.
+    kinds = {value.kind for value in params.values()}
+    if inspect.Parameter.VAR_POSITIONAL in kinds:
+      raise TypeError(_VAR_ARGS_NOT_ALLOWED)
+    elif inspect.Parameter.VAR_KEYWORD in kinds:
+      raise TypeError(_VAR_KWARGS_NOT_ALLOWED)
+    # Note that we assume direct correspondence between the names of constructor
+    # arguments and attributes.
+    return {name: getattr(self, name) for name in params.keys()}
+
+  def replace(self, **kwargs):
+    """Returns a new copy of `self` with specified attributes replaced.
+
+    Args:
+      **kwargs: Optional attributes to replace.
+
+    Returns:
+      A new copy of `self`.
+    """
+    all_kwargs = self._get_constructor_kwargs()
+    all_kwargs.update(kwargs)
+    return type(self)(**all_kwargs)
 
   def __reduce__(self):
     return Array, (self._shape, self._dtype, self._name)

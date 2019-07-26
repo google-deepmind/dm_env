@@ -127,6 +127,45 @@ class ArrayTest(parameterized.TestCase):
     desc = specs.Array([1, 5], np.float32, "test")
     self.assertEqual(pickle.loads(pickle.dumps(desc)), desc)
 
+  @parameterized.parameters(
+      {"arg_name": "shape", "new_value": (2, 3)},
+      {"arg_name": "dtype", "new_value": np.int32},
+      {"arg_name": "name", "new_value": "something_else"})
+  def testReplace(self, arg_name, new_value):
+    old_spec = specs.Array([1, 5], np.float32, "test")
+    new_spec = old_spec.replace(**{arg_name: new_value})
+    self.assertIsNot(old_spec, new_spec)
+    self.assertEqual(getattr(new_spec, arg_name), new_value)
+    for attr_name in set(["shape", "dtype", "name"]).difference([arg_name]):
+      self.assertEqual(getattr(new_spec, attr_name),
+                       getattr(old_spec, attr_name))
+
+  def testReplaceRaisesTypeErrorIfSubclassAcceptsVarArgs(self):
+
+    class InvalidSpecSubclass(specs.Array):
+
+      def __init__(self, *args):  # pylint: disable=useless-super-delegation
+        super(InvalidSpecSubclass, self).__init__(*args)
+
+    spec = InvalidSpecSubclass([1, 5], np.float32, "test")
+
+    with self.assertRaisesWithLiteralMatch(
+        TypeError, specs._VAR_ARGS_NOT_ALLOWED):
+      spec.replace(name="something_else")
+
+  def testReplaceRaisesTypeErrorIfSubclassAcceptsVarKwargs(self):
+
+    class InvalidSpecSubclass(specs.Array):
+
+      def __init__(self, **kwargs):  # pylint: disable=useless-super-delegation
+        super(InvalidSpecSubclass, self).__init__(**kwargs)
+
+    spec = InvalidSpecSubclass(shape=[1, 5], dtype=np.float32, name="test")
+
+    with self.assertRaisesWithLiteralMatch(
+        TypeError, specs._VAR_KWARGS_NOT_ALLOWED):
+      spec.replace(name="something_else")
+
 
 class BoundedArrayTest(parameterized.TestCase):
 
@@ -241,6 +280,23 @@ class BoundedArrayTest(parameterized.TestCase):
     desc = specs.BoundedArray([1, 5], np.float32, -1, 1, "test")
     self.assertEqual(pickle.loads(pickle.dumps(desc)), desc)
 
+  @parameterized.parameters(
+      {"arg_name": "shape", "new_value": (2, 3)},
+      {"arg_name": "dtype", "new_value": np.int32},
+      {"arg_name": "name", "new_value": "something_else"},
+      {"arg_name": "minimum", "new_value": -2},
+      {"arg_name": "maximum", "new_value": 2},
+  )
+  def testReplace(self, arg_name, new_value):
+    old_spec = specs.BoundedArray([1, 5], np.float32, -1, 1, "test")
+    new_spec = old_spec.replace(**{arg_name: new_value})
+    self.assertIsNot(old_spec, new_spec)
+    self.assertEqual(getattr(new_spec, arg_name), new_value)
+    for attr_name in set(["shape", "dtype", "name", "minimum", "maximum"]
+                        ).difference([arg_name]):
+      self.assertEqual(getattr(new_spec, attr_name),
+                       getattr(old_spec, attr_name))
+
 
 class DiscreteArrayTest(parameterized.TestCase):
 
@@ -280,6 +336,19 @@ class DiscreteArrayTest(parameterized.TestCase):
     desc = specs.DiscreteArray(2, np.int32, "test")
     self.assertEqual(pickle.loads(pickle.dumps(desc)), desc)
 
+  @parameterized.parameters(
+      {"arg_name": "num_values", "new_value": 4},
+      {"arg_name": "dtype", "new_value": np.int64},
+      {"arg_name": "name", "new_value": "something_else"})
+  def testReplace(self, arg_name, new_value):
+    old_spec = specs.DiscreteArray(2, np.int32, "test")
+    new_spec = old_spec.replace(**{arg_name: new_value})
+    self.assertIsNot(old_spec, new_spec)
+    self.assertEqual(getattr(new_spec, arg_name), new_value)
+    for attr_name in set(
+        ["num_values", "dtype", "name"]).difference([arg_name]):
+      self.assertEqual(getattr(new_spec, attr_name),
+                       getattr(old_spec, attr_name))
 
 if __name__ == "__main__":
   absltest.main()

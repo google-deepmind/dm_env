@@ -35,6 +35,7 @@ setup(
     install_requires=[
         'absl-py',
         'enum34',
+        'funcsigs ; python_version < "3.3"',
         'numpy',
         'six',
     ],
