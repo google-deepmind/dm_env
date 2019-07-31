@@ -182,6 +182,17 @@ class BoundedArrayTest(parameterized.TestCase):
     self.assertEqual(type(spec.minimum), np.ndarray)
     self.assertEqual(type(spec.maximum), np.ndarray)
 
+  @parameterized.parameters(
+      dict(spec_dtype=np.float32, min_dtype=np.float64, max_dtype=np.int32),
+      dict(spec_dtype=np.uint64, min_dtype=np.uint8, max_dtype=float))
+  def testMinMaxCasting(self, spec_dtype, min_dtype, max_dtype):
+    minimum = np.array(0., dtype=min_dtype)
+    maximum = np.array((3.14, 15.9, 265.4), dtype=max_dtype)
+    spec = specs.BoundedArray(
+        shape=(1, 2, 3), dtype=spec_dtype, minimum=minimum, maximum=maximum)
+    self.assertEqual(spec.minimum.dtype, spec_dtype)
+    self.assertEqual(spec.maximum.dtype, spec_dtype)
+
   def testReadOnly(self):
     spec = specs.BoundedArray((1, 2, 3), np.float32, 0, (5, 5, 5))
     with six.assertRaisesRegex(self, ValueError, "read-only"):
@@ -191,22 +202,22 @@ class BoundedArrayTest(parameterized.TestCase):
 
   def testEqualBroadcastingBounds(self):
     spec_1 = specs.BoundedArray(
-        (1, 2), np.int32, minimum=0.0, maximum=1.0)
+        (1, 2), np.float32, minimum=0.0, maximum=1.0)
     spec_2 = specs.BoundedArray(
-        (1, 2), np.int32, minimum=[0.0, 0.0], maximum=[1.0, 1.0])
+        (1, 2), np.float32, minimum=[0.0, 0.0], maximum=[1.0, 1.0])
     self.assertEqual(spec_1, spec_2)
 
   def testNotEqualDifferentMinimum(self):
     spec_1 = specs.BoundedArray(
-        (1, 2), np.int32, minimum=[0.0, -0.6], maximum=[1.0, 1.0])
+        (1, 2), np.float32, minimum=[0.0, -0.6], maximum=[1.0, 1.0])
     spec_2 = specs.BoundedArray(
-        (1, 2), np.int32, minimum=[0.0, 0.0], maximum=[1.0, 1.0])
+        (1, 2), np.float32, minimum=[0.0, 0.0], maximum=[1.0, 1.0])
     self.assertNotEqual(spec_1, spec_2)
 
   def testNotEqualOtherClass(self):
     spec_1 = specs.BoundedArray(
-        (1, 2), np.int32, minimum=[0.0, -0.6], maximum=[1.0, 1.0])
-    spec_2 = specs.Array((1, 2), np.int32)
+        (1, 2), np.float32, minimum=[0.0, -0.6], maximum=[1.0, 1.0])
+    spec_2 = specs.Array((1, 2), np.float32)
     self.assertNotEqual(spec_1, spec_2)
     self.assertNotEqual(spec_2, spec_1)
 

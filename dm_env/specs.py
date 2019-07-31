@@ -211,10 +211,10 @@ class BoundedArray(Array):
       raise ValueError('maximum is not compatible with shape. '
                        'Message: {!r}.'.format(numpy_exception))
 
-    self._minimum = np.array(minimum)
+    self._minimum = np.array(minimum, dtype=self.dtype)
     self._minimum.setflags(write=False)
 
-    self._maximum = np.array(maximum)
+    self._maximum = np.array(maximum, dtype=self.dtype)
     self._maximum.setflags(write=False)
 
   @property
