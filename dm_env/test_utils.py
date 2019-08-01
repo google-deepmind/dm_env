@@ -182,8 +182,8 @@ class EnvironmentTestMixin(_abstract_test_mixin.TestMixin):
       self.reset_environment()
 
   def test_step_on_fresh_environment(self):
-    # Action should be ignored here; ideally passing None should be acceptable
-    # but environments don't always like this.
+    # Calling `step()` on a fresh environment should be equivalent to `reset()`.
+    # Note that the action should be ignored.
     step = self.step_environment()
     self.assertIs(dm_env.StepType.FIRST, step.step_type,
                   _STEP_NEW_ENV_MUST_RETURN_FIRST.format(step.step_type))
