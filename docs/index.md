@@ -18,14 +18,15 @@ to `step()`. In many settings we refer to each sequence as an *episode*. Each
 sequence starts with a `step_type` of `FIRST`, ends with a `step_type` of
 `LAST`, and has a `step_type` of `MID` for all intermediate `TimeStep`s.
 
-Calling `step()` after a `TimeStep` with `step_type` of `LAST` will start a new
-sequence. This means the environment will ignore the next `action` after a
-`step_type` of `LAST`.
-
 As well as `step()`, each environment implements a `reset()` method. This takes
 no arguments, forces the start of a new sequence and returns the first
 `TimeStep`. See the [run loop samples](#run-loop-samples) below for more
 details.
+
+Calling `step()` on a new environment instance, or immediately after a
+`TimeStep` with a `step_type` of `LAST` is equivalent to calling `reset()`. In
+other words, the `action` argument will be ignored and a new sequence will
+begin, starting with a `step_type` of `FIRST`.
 
 NOTE: The `discount` does *not* determine when a sequence ends. The `discount`
 may be 0 in the middle of a sequence and ≥0 at the end of a sequence.
