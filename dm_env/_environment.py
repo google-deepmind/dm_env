@@ -43,10 +43,12 @@ class TimeStep(
 
   Attributes:
     step_type: A `StepType` enum value.
-    reward: A scalar, or `None` if `step_type` is `StepType.FIRST`, i.e. at the
-      start of a sequence.
-    discount: A discount value in the range `[0, 1]`, or `None` if `step_type`
-      is `StepType.FIRST`, i.e. at the start of a sequence.
+    reward:  A scalar, NumPy array, nested dict, list or tuple of rewards; or
+      `None` if `step_type` is `StepType.FIRST`, i.e. at the start of a
+      sequence.
+    discount: A scalar, NumPy array, nested dict, list or tuple of discount
+      values in the range `[0, 1]`, or `None` if `step_type` is
+      `StepType.FIRST`, i.e. at the start of a sequence.
     observation: A NumPy array, or a nested dict, list or tuple of arrays.
       Scalar values that can be cast to NumPy arrays (e.g. Python floats) are
       also valid in place of a scalar array.
@@ -133,9 +135,11 @@ class Environment(object):
       A `TimeStep` namedtuple containing:
         step_type: A `StepType` value.
         reward: Reward at this timestep, or None if step_type is
-          `StepType.FIRST`.
+          `StepType.FIRST`. Must conform to the specification returned by
+          `reward_spec()`.
         discount: A discount in the range [0, 1], or None if step_type is
-          `StepType.FIRST`.
+          `StepType.FIRST`. Must conform to the specification returned by
+          `discount_spec()`.
         observation: A NumPy array, or a nested dict, list or tuple of arrays.
           Scalar values that can be cast to NumPy arrays (e.g. Python floats)
           are also valid in place of a scalar array. Must conform to the
