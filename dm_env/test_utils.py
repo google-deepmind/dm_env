@@ -23,6 +23,9 @@ To test your own environment, all that's required is to inherit from
 `make_object_under_test`:
 
 ```python
+from absl.testing import absltest
+from dm_env import test_utils
+
 class MyEnvImplementationTest(test_utils.EnvironmentTestMixin,
                               absltest.TestCase):
 
