@@ -53,6 +53,7 @@ from __future__ import print_function
 from absl import logging
 import dm_env
 from six.moves import range
+import tree
 from dm_env import _abstract_test_mixin
 _STEP_NEW_ENV_MUST_RETURN_FIRST = (
     "calling step() on a fresh environment must produce a step with "
@@ -101,11 +102,10 @@ class EnvironmentTestMixin(_abstract_test_mixin.TestMixin):
     for _ in range(20):
       yield self.make_action()
 
-  # TODO(b/137269208): Add support for generating nested structures of actions.
   def make_action(self):
     """Returns a single action conforming to the environment's action_spec()."""
     spec = self.environment.action_spec()
-    return spec.generate_value()
+    return tree.map_structure(lambda s: s.generate_value(), spec)
 
   def reset_environment(self):
     """Resets the environment and checks that the returned TimeStep is valid.
@@ -154,15 +154,24 @@ class EnvironmentTestMixin(_abstract_test_mixin.TestMixin):
       self.assertValidDiscount(step.discount)
     self.assertValidObservation(step.observation)
 
-  # TODO(b/137269208): Add support for validating nested structures.
   def assertConformsToSpec(self, value, spec):
     """Checks that `value` conforms to `spec`.
 
     Args:
-      value: A numpy array or scalar
-      spec: An instance of `specs.Array`
+      value: A potentially nested structure of numpy arrays or scalars.
+      spec: A potentially nested structure of `specs.Array` instances.
     """
-    spec.validate(value)
+    try:
+      tree.assert_same_structure(value, spec)
+    except (TypeError, ValueError) as e:
+      self.fail("`spec` and `value` have mismatching structures: {}".format(e))
+    def validate(path, item, array_spec):
+      try:
+        array_spec.validate(item)
+      except ValueError as e:
+        raise ValueError("Value at path {!r} failed validation: {}."
+                         .format("/".join(map(str, path)), e))
+    tree.map_structure_with_path(validate, value, spec)
 
   def assertValidObservation(self, observation):
     """Checks that `observation` conforms to the `observation_spec()`."""

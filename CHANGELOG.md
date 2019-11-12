@@ -4,6 +4,11 @@ All significant changes to this project will be documented here.
 
 ## [Unreleased]
 
+*   `test_utils.EnvironmentTestMixin` can now be used to validate
+    implementations of `dm_env.Environment` where actions, observations, rewards
+    and/or discounts are arbitrary nested structures containing numpy arrays or
+    scalars.
+
 ## [1.1]
 
 Release date: 2019-08-12

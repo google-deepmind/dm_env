@@ -34,6 +34,7 @@ setup(
     packages=find_packages(exclude=['examples']),
     install_requires=[
         'absl-py',
+        'dm-tree',
         'enum34 ; python_version < "3.4"',
         'funcsigs ; python_version < "3.3"',
         'numpy',

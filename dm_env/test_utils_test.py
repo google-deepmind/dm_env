@@ -219,6 +219,21 @@ TestInvalidObservation = _make_test_case_with_expected_failures(
     ]
 )
 
+TestMismatchingObservationStructure = _make_test_case_with_expected_failures(
+    name='TestInvalidObservation',
+    timestep_sequence=[
+        FIRST,
+        MID._replace(observation=[OBSERVATION]),  # Wrong structure.
+        MID,
+        LAST,
+    ],
+    expected_failures=[
+        ('test_step_after_reset', AssertionError),
+        ('test_step_on_fresh_environment', AssertionError),
+        ('test_longer_action_sequence', AssertionError),
+    ]
+)
+
 
 if __name__ == '__main__':
   absltest.main()
