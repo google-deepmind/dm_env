@@ -2,7 +2,11 @@
 
 All significant changes to this project will be documented here.
 
-## [Unreleased]
+## [1.2]
+
+Release date: 2019-11-12
+
+### Changed
 
 *   `test_utils.EnvironmentTestMixin` can now be used to validate
     implementations of `dm_env.Environment` where actions, observations, rewards
@@ -29,6 +33,7 @@ Release date: 2019-07-18
 
 *   Initial release.
 
-[Unreleased]: https://github.com/deepmind/dm_env/compare/v1.1...HEAD
+[Unreleased]: https://github.com/deepmind/dm_env/compare/v1.2...HEAD
+[1.2]: https://github.com/deepmind/dm_env/compare/v1.1...v1.2
 [1.1]: https://github.com/deepmind/dm_env/compare/v1.0...v1.1
 [1.0]: https://github.com/deepmind/dm_env/releases/tag/v1.0
