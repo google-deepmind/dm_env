@@ -22,7 +22,7 @@ using the `dm_env` interface.
 `dm_env` can be installed from PyPI using `pip`:
 
 ```bash
-pip install dm_env
+pip install dm-env
 ```
 
 You can also install it directly from our GitHub repository using `pip`:

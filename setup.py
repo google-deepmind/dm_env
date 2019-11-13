@@ -25,7 +25,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 setup(
-    name='dm_env',
+    name='dm-env',
     version=imp.load_source('_metadata', 'dm_env/_metadata.py').__version__,
     description='A Python interface for Reinforcement Learning environments.',
     author='DeepMind',
