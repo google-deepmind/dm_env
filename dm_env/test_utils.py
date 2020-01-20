@@ -167,7 +167,7 @@ class EnvironmentTestMixin(_abstract_test_mixin.TestMixin):
       self.fail("`spec` and `value` have mismatching structures: {}".format(e))
     def validate(path, item, array_spec):
       try:
-        array_spec.validate(item)
+        return array_spec.validate(item)
       except ValueError as e:
         raise ValueError("Value at path {!r} failed validation: {}."
                          .format("/".join(map(str, path)), e))
