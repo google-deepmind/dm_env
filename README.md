@@ -39,3 +39,21 @@ pip install /path/to/local/dm_env/
 
 [api_docs]: docs/index.md
 [examples]: examples/
+
+## Citing
+
+To cite this repository:
+
+```bibtex
+@misc{dm_env2019,
+  author={Alistair Muldal and
+      Yotam Doron and
+      John Aslanides and
+      Tim Harley and
+      Tom Ward and
+      Siqi Liu},
+  title={dm\_env: A Python interface for reinforcement learning environments},
+  year={2019},
+  url={http://github.com/deepmind/dm_env}
+}
+```
