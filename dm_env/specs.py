@@ -266,7 +266,7 @@ class DiscreteArray(BoundedArray):
   """Represents a discrete, scalar, zero-based space.
 
   Concretely this is a 0-dimensional numpy array containing a single integer
-  value between 0 and num_items - 1 (inclusive).
+  value between 0 and num_values - 1 (inclusive).
   """
 
   _REPR_TEMPLATE = (
