@@ -2,6 +2,11 @@
 
 All significant changes to this project will be documented here.
 
+## [Unreleased]
+
+*   Added a `StringArray` spec subclass for representing arrays of variable-
+    length strings.
+
 ## [1.2]
 
 Release date: 2019-11-12

@@ -361,5 +361,91 @@ class DiscreteArrayTest(parameterized.TestCase):
       self.assertEqual(getattr(new_spec, attr_name),
                        getattr(old_spec, attr_name))
 
+
+class StringArrayTest(parameterized.TestCase):
+
+  @parameterized.parameters(int, bool)
+  def testInvalidStringType(self, string_type):
+    with self.assertRaisesWithLiteralMatch(
+        ValueError, specs._INVALID_STRING_TYPE.format(string_type)):
+      specs.StringArray(shape=(), string_type=string_type)
+
+  @parameterized.parameters(
+      dict(value=[u"foo", u"bar"], spec_string_type=six.text_type),
+      dict(value=(u"foo", u"bar"), spec_string_type=six.text_type),
+      dict(value=np.array([u"foo", u"bar"]), spec_string_type=six.text_type),
+      dict(value=[b"foo", b"bar"], spec_string_type=six.binary_type),
+      dict(value=(b"foo", b"bar"), spec_string_type=six.binary_type),
+      dict(value=np.array([b"foo", b"bar"]), spec_string_type=six.binary_type),
+  )
+  def testValidateCorrectInput(self, value, spec_string_type):
+    spec = specs.StringArray(shape=(2,), string_type=spec_string_type)
+    validated = spec.validate(value)
+    self.assertIsInstance(validated, np.ndarray)
+
+  @parameterized.parameters(
+      dict(value=np.array(u"foo"), spec_shape=(1,)),
+      dict(value=np.array([u"foo"]), spec_shape=()),
+      dict(value=np.array([u"foo", u"bar", u"baz"]), spec_shape=(2,)),
+  )
+  def testInvalidShape(self, value, spec_shape):
+    spec = specs.StringArray(shape=spec_shape, string_type=six.text_type)
+    with self.assertRaisesWithLiteralMatch(
+        ValueError,
+        specs._INVALID_SHAPE % (spec_shape, value.shape)):
+      spec.validate(value)
+
+  @parameterized.parameters(
+      dict(bad_element=42, spec_string_type=six.text_type),
+      dict(bad_element=False, spec_string_type=six.text_type),
+      dict(bad_element=[u"foo"], spec_string_type=six.text_type),
+      dict(bad_element=b"foo", spec_string_type=six.text_type),
+      dict(bad_element=u"foo", spec_string_type=six.binary_type),
+  )
+  def testInvalidItemType(self, bad_element, spec_string_type):
+    spec = specs.StringArray(shape=(3,), string_type=spec_string_type)
+    good_element = spec_string_type()
+    value = [good_element, bad_element, good_element]
+    message = specs._INVALID_ELEMENT_TYPE % (
+        spec_string_type, bad_element, type(bad_element))
+    with self.assertRaisesWithLiteralMatch(ValueError, message):
+      spec.validate(value)
+
+  @parameterized.parameters(
+      dict(
+          shape=(),
+          string_type=six.text_type,
+          expected=np.array(u"", dtype=np.object)),
+      dict(
+          shape=(1, 2),
+          string_type=six.binary_type,
+          expected=np.array([[b"", b""]], dtype=np.object)),
+  )
+  def testGenerateValue(self, shape, string_type, expected):
+    spec = specs.StringArray(shape=shape, string_type=string_type)
+    value = spec.generate_value()
+    spec.validate(value)  # Should be valid.
+    np.testing.assert_array_equal(expected, value)
+
+  @parameterized.parameters(
+      dict(shape=(), string_type=six.text_type, name=None),
+      dict(shape=(2, 3), string_type=six.binary_type, name="foobar"),
+  )
+  def testRepr(self, shape, string_type, name):
+    spec = specs.StringArray(shape=shape, string_type=string_type, name=name)
+    spec_repr = repr(spec)
+    self.assertIn("StringArray", spec_repr)
+    self.assertIn("shape={}".format(shape), spec_repr)
+    self.assertIn("string_type={}".format(string_type), spec_repr)
+    self.assertIn("name={}".format(name), spec_repr)
+
+  @parameterized.parameters(
+      dict(shape=(), string_type=six.text_type, name=None),
+      dict(shape=(2, 3), string_type=six.binary_type, name="foobar"),
+  )
+  def testSerialization(self, shape, string_type, name):
+    spec = specs.StringArray(shape=shape, string_type=string_type, name=name)
+    self.assertEqual(pickle.loads(pickle.dumps(spec)), spec)
+
 if __name__ == "__main__":
   absltest.main()

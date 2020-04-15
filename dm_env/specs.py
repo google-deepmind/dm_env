@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import sys
 import numpy as np
+import six
 
 # pylint: disable=g-import-not-at-top
 if sys.version_info >= (3, 3):  # `inspect.signature` was added in Python 3.3
@@ -320,3 +321,72 @@ class DiscreteArray(BoundedArray):
 
   def __reduce__(self):
     return DiscreteArray, (self._num_values, self._dtype, self._name)
+
+
+_VALID_STRING_TYPES = (six.text_type, six.binary_type)
+_INVALID_STRING_TYPE = (
+    'Expected `string_type` to be one of: {}, got: %r.'
+    .format(_VALID_STRING_TYPES))
+_INVALID_ELEMENT_TYPE = (
+    'Expected all elements to be of type: %s. Got value: %r of type: %s.')
+
+
+class StringArray(Array):
+  """Represents an array of variable-length Python strings."""
+  __slots__ = ('_string_type',)
+
+  _REPR_TEMPLATE = (
+      '{self.__class__.__name__}(shape={self.shape}, '
+      'string_type={self.string_type}, name={self.name})')
+
+  def __init__(self, shape, string_type=six.text_type, name=None):
+    """Initializes a new `StringArray` spec.
+
+    Args:
+      shape: An iterable specifying the array shape.
+      string_type: The native Python string type for each element; either
+        unicode or ASCII. Defaults to unicode.
+      name: Optional string containing a semantic name for the corresponding
+        array. Defaults to `None`.
+    """
+    if string_type not in _VALID_STRING_TYPES:
+      raise ValueError(_INVALID_STRING_TYPE.format(string_type))
+    self._string_type = string_type
+    super(StringArray, self).__init__(shape=shape, dtype=np.object, name=name)
+
+  @property
+  def string_type(self):
+    """Returns the Python string type for each element."""
+    return self._string_type
+
+  def validate(self, value):
+    """Checks if value conforms to this spec.
+
+    Args:
+      value: a numpy array or value convertible to one via `np.asarray`.
+
+    Returns:
+      value, converted if necessary to a numpy array.
+
+    Raises:
+      ValueError: if value doesn't conform to this spec.
+    """
+    value = np.asarray(value, dtype=np.object)
+    if value.shape != self.shape:
+      self._fail_validation(_INVALID_SHAPE, self.shape, value.shape)
+    for item in value.flat:
+      if not isinstance(item, self.string_type):
+        self._fail_validation(
+            _INVALID_ELEMENT_TYPE, self.string_type, item, type(item))
+    return value
+
+  def generate_value(self):
+    """Generate a test value which conforms to this spec."""
+    empty_string = self.string_type()  # pylint: disable=not-callable
+    return np.full(shape=self.shape, dtype=self.dtype, fill_value=empty_string)
+
+  def __repr__(self):
+    return self._REPR_TEMPLATE.format(self=self)
+
+  def __reduce__(self):
+    return type(self), (self.shape, self.string_type, self.name)
