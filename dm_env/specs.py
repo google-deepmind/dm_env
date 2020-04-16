@@ -325,7 +325,7 @@ class DiscreteArray(BoundedArray):
 
 _VALID_STRING_TYPES = (six.text_type, six.binary_type)
 _INVALID_STRING_TYPE = (
-    'Expected `string_type` to be one of: {}, got: %r.'
+    'Expected `string_type` to be one of: {}, got: {{!r}}.'
     .format(_VALID_STRING_TYPES))
 _INVALID_ELEMENT_TYPE = (
     'Expected all elements to be of type: %s. Got value: %r of type: %s.')
