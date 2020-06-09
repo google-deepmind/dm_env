@@ -21,9 +21,9 @@ from __future__ import print_function
 
 import abc
 import collections
+import enum
 
 from dm_env import specs
-import enum
 import six
 
 
@@ -194,7 +194,7 @@ class Environment(object):
 
     Implement this method for an environment backed by an external process.
 
-    This method be used directly
+    This method can be used directly
 
     ```python
     env = Env(...)
