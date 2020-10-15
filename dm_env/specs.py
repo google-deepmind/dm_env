@@ -266,8 +266,13 @@ _DTYPE_OVERFLOW = (
 class DiscreteArray(BoundedArray):
   """Represents a discrete, scalar, zero-based space.
 
-  Concretely this is a 0-dimensional numpy array containing a single integer
-  value between 0 and num_values - 1 (inclusive).
+  This is a special case of the parent `BoundedArray` class. It represents a
+  0-dimensional numpy array  containing a single integer value between
+  0 and num_values - 1 (inclusive), and exposes a scalar `num_values` property
+  in addition to the standard `BoundedArray` interface.
+
+  For an example use-case, this can be used to define the action space of a
+  simple RL environment that accepts discrete actions.
   """
 
   _REPR_TEMPLATE = (
