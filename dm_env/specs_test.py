@@ -263,6 +263,36 @@ class BoundedArrayTest(parameterized.TestCase):
           specs._OUT_OF_BOUNDS % (spec.minimum, value, spec.maximum)):
         spec.validate(value)
 
+  @parameterized.parameters(
+      # Semi-infinite intervals.
+      dict(minimum=0., maximum=np.inf, value=0., is_valid=True),
+      dict(minimum=0., maximum=np.inf, value=1., is_valid=True),
+      dict(minimum=0., maximum=np.inf, value=np.inf, is_valid=True),
+      dict(minimum=0., maximum=np.inf, value=-1., is_valid=False),
+      dict(minimum=0., maximum=np.inf, value=-np.inf, is_valid=False),
+      dict(minimum=-np.inf, maximum=0., value=0., is_valid=True),
+      dict(minimum=-np.inf, maximum=0., value=-1., is_valid=True),
+      dict(minimum=-np.inf, maximum=0., value=-np.inf, is_valid=True),
+      dict(minimum=-np.inf, maximum=0., value=1., is_valid=False),
+      # Infinite interval.
+      dict(minimum=-np.inf, maximum=np.inf, value=1., is_valid=True),
+      dict(minimum=-np.inf, maximum=np.inf, value=-1., is_valid=True),
+      dict(minimum=-np.inf, maximum=np.inf, value=-np.inf, is_valid=True),
+      dict(minimum=-np.inf, maximum=np.inf, value=np.inf, is_valid=True),
+      # Special case where minimum == maximum.
+      dict(minimum=0., maximum=0., value=0., is_valid=True),
+      dict(minimum=0., maximum=0., value=np.finfo(float).eps, is_valid=False),
+  )
+  def testValidateBoundsFloat(self, minimum, maximum, value, is_valid):
+    spec = specs.BoundedArray((), float, minimum=minimum, maximum=maximum)
+    if is_valid:  # Should not raise any exception.
+      spec.validate(value)
+    else:
+      with self.assertRaisesWithLiteralMatch(
+          ValueError,
+          specs._OUT_OF_BOUNDS % (spec.minimum, value, spec.maximum)):
+        spec.validate(value)
+
   def testValidateReturnsValue(self):
     spec = specs.BoundedArray([1], np.int32, minimum=0, maximum=1)
     validated_value = spec.validate(np.array([0], dtype=np.int32))

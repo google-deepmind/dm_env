@@ -176,6 +176,14 @@ class BoundedArray(Array):
   ```python
   spec = BoundedArray((3, 4), np.int, minimum=0, maximum=2)
   ```
+
+  Note that one or both bounds may be infinite. For example, the set of
+  non-negative floats can be expressed as:
+  ```python
+  spec = BoundedArray((), np.float64, minimum=0.0, maximum=np.inf)
+  ```
+  In this case `np.inf` would be considered valid, since the upper bound is
+  inclusive.
   """
   __slots__ = ('_minimum', '_maximum')
   __hash__ = None
