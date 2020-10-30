@@ -244,9 +244,9 @@ class BoundedArrayTest(parameterized.TestCase):
 
   def testRepr(self):
     as_string = repr(specs.BoundedArray(
-        (1, 2), np.int32, minimum=101.0, maximum=73.0))
-    self.assertIn("101", as_string)
+        (1, 2), np.int32, minimum=73.0, maximum=101.0))
     self.assertIn("73", as_string)
+    self.assertIn("101", as_string)
 
   @parameterized.parameters(
       dict(value=np.array([[5, 6], [8, 10]], dtype=np.int32), is_valid=True),
@@ -337,6 +337,19 @@ class BoundedArrayTest(parameterized.TestCase):
                         ).difference([arg_name]):
       self.assertEqual(getattr(new_spec, attr_name),
                        getattr(old_spec, attr_name))
+
+  @parameterized.parameters([
+      dict(minimum=1., maximum=0.),
+      dict(minimum=[0., 1.], maximum=0.),
+      dict(minimum=1., maximum=[0., 0.]),
+      dict(minimum=[0., 1.], maximum=[0., 0.]),
+  ])
+  def testErrorIfMinimumGreaterThanMaximum(self, minimum, maximum):
+    with self.assertRaisesWithLiteralMatch(
+        ValueError,
+        specs._MINIMUM_MUST_BE_LESS_THAN_OR_EQUAL_TO_MAXIMUM.format(
+            minimum=minimum, maximum=maximum)):
+      specs.BoundedArray((2,), np.float32, minimum, maximum, "test")
 
 
 class DiscreteArrayTest(parameterized.TestCase):

@@ -34,6 +34,9 @@ _INVALID_DTYPE = 'Expected dtype %r but found %r'
 _OUT_OF_BOUNDS = 'Values were not all within bounds %s <= %s <= %s'
 _VAR_ARGS_NOT_ALLOWED = 'Spec subclasses must not accept *args.'
 _VAR_KWARGS_NOT_ALLOWED = 'Spec subclasses must not accept **kwargs.'
+_MINIMUM_MUST_BE_LESS_THAN_OR_EQUAL_TO_MAXIMUM = (
+    'All values in `minimum` must be less than or equal to their corresponding '
+    'value in `maximum`, got:\nminimum={minimum!r}\nmaximum={maximum!r}.')
 
 
 class Array(object):
@@ -203,22 +206,28 @@ class BoundedArray(Array):
 
     Raises:
       ValueError: If `minimum` or `maximum` are not broadcastable to `shape`.
+      ValueError: If any values in `minimum` are greater than their
+        corresponding value in `maximum`.
       TypeError: If the shape is not an iterable or if the `dtype` is an invalid
         numpy dtype.
     """
     super(BoundedArray, self).__init__(shape, dtype, name)
 
     try:
-      np.broadcast_to(minimum, shape=shape)
+      bcast_minimum = np.broadcast_to(minimum, shape=shape)
     except ValueError as numpy_exception:
       raise ValueError('minimum is not compatible with shape. '
                        'Message: {!r}.'.format(numpy_exception))
 
     try:
-      np.broadcast_to(maximum, shape=shape)
+      bcast_maximum = np.broadcast_to(maximum, shape=shape)
     except ValueError as numpy_exception:
       raise ValueError('maximum is not compatible with shape. '
                        'Message: {!r}.'.format(numpy_exception))
+
+    if np.any(bcast_minimum > bcast_maximum):
+      raise ValueError(_MINIMUM_MUST_BE_LESS_THAN_OR_EQUAL_TO_MAXIMUM.format(
+          minimum=minimum, maximum=maximum))
 
     self._minimum = np.array(minimum, dtype=self.dtype)
     self._minimum.setflags(write=False)

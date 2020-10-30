@@ -6,6 +6,7 @@ All significant changes to this project will be documented here.
 
 *   Added a `StringArray` spec subclass for representing arrays of variable-
     length strings.
+*   Added a check to enforce that `minimum <= maximum` for `BoundedArray`.
 
 ## [1.2]
 
