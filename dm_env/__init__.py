@@ -14,9 +14,6 @@
 # limitations under the License.
 # ============================================================================
 """A Python interface for reinforcement learning environments."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 from dm_env import _environment
 from dm_env._metadata import __version__

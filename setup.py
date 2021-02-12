@@ -16,10 +16,6 @@
 
 """Install script for setuptools."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import imp
 from setuptools import find_packages
 from setuptools import setup
@@ -35,10 +31,7 @@ setup(
     install_requires=[
         'absl-py',
         'dm-tree',
-        'enum34 ; python_version < "3.4"',
-        'funcsigs ; python_version < "3.3"',
         'numpy',
-        'six',
     ],
     tests_require=[
         'nose',
@@ -52,9 +45,6 @@ setup(
         'Operating System :: POSIX :: Linux',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: MacOS :: MacOS X',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',

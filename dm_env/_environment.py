@@ -15,21 +15,14 @@
 # ============================================================================
 """Python RL Environment API."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import abc
-import collections
 import enum
+from typing import Any, NamedTuple
 
 from dm_env import specs
-import six
 
 
-class TimeStep(
-    collections.namedtuple('TimeStep',
-                           ['step_type', 'reward', 'discount', 'observation'])):
+class TimeStep(NamedTuple):
   """Returned with every call to `step` and `reset` on an environment.
 
   A `TimeStep` contains the data emitted by an environment at each step of
@@ -53,18 +46,20 @@ class TimeStep(
       Scalar values that can be cast to NumPy arrays (e.g. Python floats) are
       also valid in place of a scalar array.
   """
-  __slots__ = ()
 
-  def first(self):
-    # type: () -> bool
+  # TODO(b/143116886): Use generics here when PyType supports them.
+  step_type: Any
+  reward: Any
+  discount: Any
+  observation: Any
+
+  def first(self) -> bool:
     return self.step_type == StepType.FIRST
 
-  def mid(self):
-    # type: () -> bool
+  def mid(self) -> bool:
     return self.step_type == StepType.MID
 
-  def last(self):
-    # type: () -> bool
+  def last(self) -> bool:
     return self.step_type == StepType.LAST
 
 
@@ -77,21 +72,17 @@ class StepType(enum.IntEnum):
   # Denotes the last `TimeStep` in a sequence.
   LAST = 2
 
-  def first(self):
-    # type: () -> bool
+  def first(self) -> bool:
     return self is StepType.FIRST
 
-  def mid(self):
-    # type: () -> bool
+  def mid(self) -> bool:
     return self is StepType.MID
 
-  def last(self):
-    # type: () -> bool
+  def last(self) -> bool:
     return self is StepType.LAST
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Environment(object):
+class Environment(metaclass=abc.ABCMeta):
   """Abstract base class for Python RL environments.
 
   Observations and valid actions are described with `Array` specs, defined in
@@ -99,8 +90,7 @@ class Environment(object):
   """
 
   @abc.abstractmethod
-  def reset(self):
-    # type: () -> TimeStep
+  def reset(self) -> TimeStep:
     """Starts a new sequence and returns the first `TimeStep` of this sequence.
 
     Returns:
@@ -115,8 +105,7 @@ class Environment(object):
     """
 
   @abc.abstractmethod
-  def step(self, action):
-    # type: (...) -> TimeStep
+  def step(self, action) -> TimeStep:
     """Updates the environment according to the action and returns a `TimeStep`.
 
     If the environment returned a `TimeStep` with `StepType.LAST` at the

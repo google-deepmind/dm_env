@@ -15,18 +15,12 @@
 # ============================================================================
 """Tests for dm_env.specs."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-# Internal dependencies.
+import pickle
 
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_env import specs
 import numpy as np
-import six
-from six.moves import cPickle as pickle
 
 
 class ArrayTest(parameterized.TestCase):
@@ -87,7 +81,7 @@ class ArrayTest(parameterized.TestCase):
 
   def testIsUnhashable(self):
     spec = specs.Array(shape=(1, 2, 3), dtype=np.int32)
-    with six.assertRaisesRegex(self, TypeError, "unhashable type"):
+    with self.assertRaisesRegex(TypeError, "unhashable type"):
       hash(spec)
 
   @parameterized.parameters(
@@ -170,11 +164,11 @@ class ArrayTest(parameterized.TestCase):
 class BoundedArrayTest(parameterized.TestCase):
 
   def testInvalidMinimum(self):
-    with six.assertRaisesRegex(self, ValueError, "not compatible"):
+    with self.assertRaisesRegex(ValueError, "not compatible"):
       specs.BoundedArray((3, 5), np.uint8, (0, 0, 0), (1, 1))
 
   def testInvalidMaximum(self):
-    with six.assertRaisesRegex(self, ValueError, "not compatible"):
+    with self.assertRaisesRegex(ValueError, "not compatible"):
       specs.BoundedArray((3, 5), np.uint8, 0, (1, 1, 1))
 
   def testMinMaxAttributes(self):
@@ -195,9 +189,9 @@ class BoundedArrayTest(parameterized.TestCase):
 
   def testReadOnly(self):
     spec = specs.BoundedArray((1, 2, 3), np.float32, 0, (5, 5, 5))
-    with six.assertRaisesRegex(self, ValueError, "read-only"):
+    with self.assertRaisesRegex(ValueError, "read-only"):
       spec.minimum[0] = -1
-    with six.assertRaisesRegex(self, ValueError, "read-only"):
+    with self.assertRaisesRegex(ValueError, "read-only"):
       spec.maximum[0] = 100
 
   def testEqualBroadcastingBounds(self):
@@ -239,7 +233,7 @@ class BoundedArrayTest(parameterized.TestCase):
   def testIsUnhashable(self):
     spec = specs.BoundedArray(
         shape=(1, 2), dtype=np.int32, minimum=0.0, maximum=2.0)
-    with six.assertRaisesRegex(self, TypeError, "unhashable type"):
+    with self.assertRaisesRegex(TypeError, "unhashable type"):
       hash(spec)
 
   def testRepr(self):
@@ -414,12 +408,12 @@ class StringArrayTest(parameterized.TestCase):
       specs.StringArray(shape=(), string_type=string_type)
 
   @parameterized.parameters(
-      dict(value=[u"foo", u"bar"], spec_string_type=six.text_type),
-      dict(value=(u"foo", u"bar"), spec_string_type=six.text_type),
-      dict(value=np.array([u"foo", u"bar"]), spec_string_type=six.text_type),
-      dict(value=[b"foo", b"bar"], spec_string_type=six.binary_type),
-      dict(value=(b"foo", b"bar"), spec_string_type=six.binary_type),
-      dict(value=np.array([b"foo", b"bar"]), spec_string_type=six.binary_type),
+      dict(value=[u"foo", u"bar"], spec_string_type=str),
+      dict(value=(u"foo", u"bar"), spec_string_type=str),
+      dict(value=np.array([u"foo", u"bar"]), spec_string_type=str),
+      dict(value=[b"foo", b"bar"], spec_string_type=bytes),
+      dict(value=(b"foo", b"bar"), spec_string_type=bytes),
+      dict(value=np.array([b"foo", b"bar"]), spec_string_type=bytes),
   )
   def testValidateCorrectInput(self, value, spec_string_type):
     spec = specs.StringArray(shape=(2,), string_type=spec_string_type)
@@ -432,18 +426,18 @@ class StringArrayTest(parameterized.TestCase):
       dict(value=np.array([u"foo", u"bar", u"baz"]), spec_shape=(2,)),
   )
   def testInvalidShape(self, value, spec_shape):
-    spec = specs.StringArray(shape=spec_shape, string_type=six.text_type)
+    spec = specs.StringArray(shape=spec_shape, string_type=str)
     with self.assertRaisesWithLiteralMatch(
         ValueError,
         specs._INVALID_SHAPE % (spec_shape, value.shape)):
       spec.validate(value)
 
   @parameterized.parameters(
-      dict(bad_element=42, spec_string_type=six.text_type),
-      dict(bad_element=False, spec_string_type=six.text_type),
-      dict(bad_element=[u"foo"], spec_string_type=six.text_type),
-      dict(bad_element=b"foo", spec_string_type=six.text_type),
-      dict(bad_element=u"foo", spec_string_type=six.binary_type),
+      dict(bad_element=42, spec_string_type=str),
+      dict(bad_element=False, spec_string_type=str),
+      dict(bad_element=[u"foo"], spec_string_type=str),
+      dict(bad_element=b"foo", spec_string_type=str),
+      dict(bad_element=u"foo", spec_string_type=bytes),
   )
   def testInvalidItemType(self, bad_element, spec_string_type):
     spec = specs.StringArray(shape=(3,), string_type=spec_string_type)
@@ -457,11 +451,11 @@ class StringArrayTest(parameterized.TestCase):
   @parameterized.parameters(
       dict(
           shape=(),
-          string_type=six.text_type,
+          string_type=str,
           expected=np.array(u"", dtype=np.object)),
       dict(
           shape=(1, 2),
-          string_type=six.binary_type,
+          string_type=bytes,
           expected=np.array([[b"", b""]], dtype=np.object)),
   )
   def testGenerateValue(self, shape, string_type, expected):
@@ -471,8 +465,8 @@ class StringArrayTest(parameterized.TestCase):
     np.testing.assert_array_equal(expected, value)
 
   @parameterized.parameters(
-      dict(shape=(), string_type=six.text_type, name=None),
-      dict(shape=(2, 3), string_type=six.binary_type, name="foobar"),
+      dict(shape=(), string_type=str, name=None),
+      dict(shape=(2, 3), string_type=bytes, name="foobar"),
   )
   def testRepr(self, shape, string_type, name):
     spec = specs.StringArray(shape=shape, string_type=string_type, name=name)
@@ -483,8 +477,8 @@ class StringArrayTest(parameterized.TestCase):
     self.assertIn("name={}".format(name), spec_repr)
 
   @parameterized.parameters(
-      dict(shape=(), string_type=six.text_type, name=None),
-      dict(shape=(2, 3), string_type=six.binary_type, name="foobar"),
+      dict(shape=(), string_type=str, name=None),
+      dict(shape=(2, 3), string_type=bytes, name="foobar"),
   )
   def testSerialization(self, shape, string_type, name):
     spec = specs.StringArray(shape=shape, string_type=string_type, name=name)

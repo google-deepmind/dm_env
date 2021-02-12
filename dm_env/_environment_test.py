@@ -15,10 +15,6 @@
 # ============================================================================
 """Tests for dm_env._environment."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from absl.testing import absltest
 from absl.testing import parameterized
 import dm_env
@@ -31,8 +27,8 @@ class TimeStepHelpersTest(parameterized.TestCase):
     time_step = dm_env.restart(observation)
     self.assertIs(dm_env.StepType.FIRST, time_step.step_type)
     self.assertEqual(observation, time_step.observation)
-    self.assertEqual(None, time_step.reward)
-    self.assertEqual(None, time_step.discount)
+    self.assertIsNone(time_step.reward)
+    self.assertIsNone(time_step.discount)
 
   @parameterized.parameters(
       dict(observation=-1., reward=2.0, discount=1.0),

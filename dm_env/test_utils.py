@@ -44,15 +44,13 @@ conforming to the `action_spec` and repeats it 20 times.
 You can also add your own tests alongside the defaults if you want to test some
 behaviour that's specific to your environment. There are some assertions and
 helpers here which may be useful to you in writing these tests.
-"""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+Note that we disable the pytype: attribute-error static check for the mixin as
+absltest.TestCase methods aren't statically available here, only once mixed in.
+"""
 
 from absl import logging
 import dm_env
-from six.moves import range
 import tree
 from dm_env import _abstract_test_mixin
 _STEP_NEW_ENV_MUST_RETURN_FIRST = (
@@ -86,7 +84,7 @@ class EnvironmentTestMixin(_abstract_test_mixin.TestMixin):
   def tearDown(self):
     self.environment.close()
     # A call to super is required for cooperative multiple inheritance to work.
-    super(EnvironmentTestMixin, self).tearDown()
+    super().tearDown()  # pytype: disable=attribute-error
 
   def make_action_sequence(self):
     """Generates a sequence of actions for a longer test.
@@ -115,7 +113,7 @@ class EnvironmentTestMixin(_abstract_test_mixin.TestMixin):
     """
     step = self.environment.reset()
     self.assertValidStep(step)
-    self.assertIs(dm_env.StepType.FIRST, step.step_type,
+    self.assertIs(dm_env.StepType.FIRST, step.step_type,  # pytype: disable=attribute-error
                   _RESET_MUST_RETURN_FIRST.format(step.step_type))
     return step
 
@@ -144,6 +142,7 @@ class EnvironmentTestMixin(_abstract_test_mixin.TestMixin):
     Args:
       step: An instance of TimeStep.
     """
+    # pytype: disable=attribute-error
     self.assertIsInstance(step, dm_env.TimeStep)
     self.assertIsInstance(step.step_type, dm_env.StepType)
     if step.step_type is dm_env.StepType.FIRST:
@@ -153,6 +152,7 @@ class EnvironmentTestMixin(_abstract_test_mixin.TestMixin):
       self.assertValidReward(step.reward)
       self.assertValidDiscount(step.discount)
     self.assertValidObservation(step.observation)
+    # pytype: enable=attribute-error
 
   def assertConformsToSpec(self, value, spec):
     """Checks that `value` conforms to `spec`.
@@ -164,7 +164,7 @@ class EnvironmentTestMixin(_abstract_test_mixin.TestMixin):
     try:
       tree.assert_same_structure(value, spec)
     except (TypeError, ValueError) as e:
-      self.fail("`spec` and `value` have mismatching structures: {}".format(e))
+      self.fail("`spec` and `value` have mismatching structures: {}".format(e))  # pytype: disable=attribute-error
     def validate(path, item, array_spec):
       try:
         return array_spec.validate(item)
@@ -197,17 +197,17 @@ class EnvironmentTestMixin(_abstract_test_mixin.TestMixin):
     # Calling `step()` on a fresh environment should be equivalent to `reset()`.
     # Note that the action should be ignored.
     step = self.step_environment()
-    self.assertIs(dm_env.StepType.FIRST, step.step_type,
+    self.assertIs(dm_env.StepType.FIRST, step.step_type,  # pytype: disable=attribute-error
                   _STEP_NEW_ENV_MUST_RETURN_FIRST.format(step.step_type))
     step = self.step_environment()
-    self.assertIsNot(dm_env.StepType.FIRST, step.step_type,
+    self.assertIsNot(dm_env.StepType.FIRST, step.step_type,  # pytype: disable=attribute-error
                      _STEP_AFTER_FIRST_MUST_NOT_RETURN_FIRST)
 
   def test_step_after_reset(self):
     for _ in range(2):
       self.reset_environment()
       step = self.step_environment()
-      self.assertIsNot(dm_env.StepType.FIRST, step.step_type,
+      self.assertIsNot(dm_env.StepType.FIRST, step.step_type,  # pytype: disable=attribute-error
                        _STEP_AFTER_FIRST_MUST_NOT_RETURN_FIRST)
 
   def test_longer_action_sequence(self):
@@ -222,10 +222,10 @@ class EnvironmentTestMixin(_abstract_test_mixin.TestMixin):
       for action in self.make_action_sequence():
         step = self.step_environment(action)
         if prev_step_type is dm_env.StepType.LAST:
-          self.assertIs(dm_env.StepType.FIRST, step.step_type,
+          self.assertIs(dm_env.StepType.FIRST, step.step_type,  # pytype: disable=attribute-error
                         _FIRST_MUST_COME_AFTER_LAST)
         else:
-          self.assertIsNot(dm_env.StepType.FIRST, step.step_type,
+          self.assertIsNot(dm_env.StepType.FIRST, step.step_type,  # pytype: disable=attribute-error
                            _FIRST_MUST_ONLY_COME_AFTER_LAST)
         if step.last():
           encountered_last_step = True

@@ -25,6 +25,8 @@ using the `dm_env` interface.
 pip install dm-env
 ```
 
+Note that from version 1.4 onwards, we support Python 3.6+ only.
+
 You can also install it directly from our GitHub repository using `pip`:
 
 ```bash

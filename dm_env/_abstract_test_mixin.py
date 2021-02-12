@@ -15,12 +15,8 @@
 # ============================================================================
 """Base class for TestMixin classes."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
-
-class TestMixin(object):
+class TestMixin:
   """Base class for TestMixins.
 
   Subclasses must override `make_object_under_test`.
@@ -28,7 +24,7 @@ class TestMixin(object):
 
   def setUp(self):
     # A call to super is required for cooperative multiple inheritance to work.
-    super(TestMixin, self).setUp()
+    super().setUp()
     test_method = getattr(self, self._testMethodName)
     make_obj_kwargs = getattr(test_method, "_make_obj_kwargs", {})
     self.object_under_test = self.make_object_under_test(**make_obj_kwargs)

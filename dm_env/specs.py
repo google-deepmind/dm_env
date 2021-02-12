@@ -14,20 +14,11 @@
 # limitations under the License.
 # ============================================================================
 """Classes that describe numpy arrays."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
-import sys
+import inspect
+from typing import Optional
+
 import numpy as np
-import six
-
-# pylint: disable=g-import-not-at-top
-if sys.version_info >= (3, 3):  # `inspect.signature` was added in Python 3.3
-  import inspect
-else:
-  import funcsigs as inspect
-# pylint: enable=g-import-not-at-top
 
 _INVALID_SHAPE = 'Expected shape %r but found %r'
 _INVALID_DTYPE = 'Expected dtype %r but found %r'
@@ -39,7 +30,7 @@ _MINIMUM_MUST_BE_LESS_THAN_OR_EQUAL_TO_MAXIMUM = (
     'value in `maximum`, got:\nminimum={minimum!r}\nmaximum={maximum!r}.')
 
 
-class Array(object):
+class Array:
   """Describes a numpy array or scalar shape and dtype.
 
   An `Array` spec allows an API to describe the arrays that it accepts or
@@ -49,7 +40,7 @@ class Array(object):
   __slots__ = ('_shape', '_dtype', '_name')
   __hash__ = None
 
-  def __init__(self, shape, dtype, name=None):
+  def __init__(self, shape, dtype, name: Optional[str] = None):
     """Initializes a new `Array` spec.
 
     Args:
@@ -339,13 +330,13 @@ class DiscreteArray(BoundedArray):
     return self._num_values
 
   def __repr__(self):
-    return self._REPR_TEMPLATE.format(self=self)
+    return self._REPR_TEMPLATE.format(self=self)  # pytype: disable=duplicate-keyword-argument
 
   def __reduce__(self):
     return DiscreteArray, (self._num_values, self._dtype, self._name)
 
 
-_VALID_STRING_TYPES = (six.text_type, six.binary_type)
+_VALID_STRING_TYPES = (str, bytes)
 _INVALID_STRING_TYPE = (
     'Expected `string_type` to be one of: {}, got: {{!r}}.'
     .format(_VALID_STRING_TYPES))
@@ -361,7 +352,7 @@ class StringArray(Array):
       '{self.__class__.__name__}(shape={self.shape}, '
       'string_type={self.string_type}, name={self.name})')
 
-  def __init__(self, shape, string_type=six.text_type, name=None):
+  def __init__(self, shape, string_type=str, name=None):
     """Initializes a new `StringArray` spec.
 
     Args:
@@ -408,7 +399,7 @@ class StringArray(Array):
     return np.full(shape=self.shape, dtype=self.dtype, fill_value=empty_string)
 
   def __repr__(self):
-    return self._REPR_TEMPLATE.format(self=self)
+    return self._REPR_TEMPLATE.format(self=self)  # pytype: disable=duplicate-keyword-argument
 
   def __reduce__(self):
     return type(self), (self.shape, self.string_type, self.name)
