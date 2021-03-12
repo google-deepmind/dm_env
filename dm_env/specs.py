@@ -28,6 +28,8 @@ _VAR_KWARGS_NOT_ALLOWED = 'Spec subclasses must not accept **kwargs.'
 _MINIMUM_MUST_BE_LESS_THAN_OR_EQUAL_TO_MAXIMUM = (
     'All values in `minimum` must be less than or equal to their corresponding '
     'value in `maximum`, got:\nminimum={minimum!r}\nmaximum={maximum!r}.')
+_MINIMUM_INCOMPATIBLE_WITH_SHAPE = '`minimum` is incompatible with `shape`'
+_MAXIMUM_INCOMPATIBLE_WITH_SHAPE = '`maximum` is incompatible with `shape`'
 
 
 class Array:
@@ -207,14 +209,11 @@ class BoundedArray(Array):
     try:
       bcast_minimum = np.broadcast_to(minimum, shape=shape)
     except ValueError as numpy_exception:
-      raise ValueError('minimum is not compatible with shape. '
-                       'Message: {!r}.'.format(numpy_exception))
-
+      raise ValueError(_MINIMUM_INCOMPATIBLE_WITH_SHAPE) from numpy_exception
     try:
       bcast_maximum = np.broadcast_to(maximum, shape=shape)
     except ValueError as numpy_exception:
-      raise ValueError('maximum is not compatible with shape. '
-                       'Message: {!r}.'.format(numpy_exception))
+      raise ValueError(_MAXIMUM_INCOMPATIBLE_WITH_SHAPE) from numpy_exception
 
     if np.any(bcast_minimum > bcast_maximum):
       raise ValueError(_MINIMUM_MUST_BE_LESS_THAN_OR_EQUAL_TO_MAXIMUM.format(

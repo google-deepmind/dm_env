@@ -164,11 +164,13 @@ class ArrayTest(parameterized.TestCase):
 class BoundedArrayTest(parameterized.TestCase):
 
   def testInvalidMinimum(self):
-    with self.assertRaisesRegex(ValueError, "not compatible"):
+    with self.assertRaisesWithLiteralMatch(
+        ValueError, specs._MINIMUM_INCOMPATIBLE_WITH_SHAPE):
       specs.BoundedArray((3, 5), np.uint8, (0, 0, 0), (1, 1))
 
   def testInvalidMaximum(self):
-    with self.assertRaisesRegex(ValueError, "not compatible"):
+    with self.assertRaisesWithLiteralMatch(
+        ValueError, specs._MAXIMUM_INCOMPATIBLE_WITH_SHAPE):
       specs.BoundedArray((3, 5), np.uint8, 0, (1, 1, 1))
 
   def testMinMaxAttributes(self):
