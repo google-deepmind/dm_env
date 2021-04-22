@@ -16,13 +16,21 @@
 
 """Install script for setuptools."""
 
-import imp
+from importlib import util
 from setuptools import find_packages
 from setuptools import setup
 
+
+def get_version():
+  spec = util.spec_from_file_location('_metadata', 'dm_env/_metadata.py')
+  mod = util.module_from_spec(spec)
+  spec.loader.exec_module(mod)
+  return mod.__version__
+
+
 setup(
     name='dm-env',
-    version=imp.load_source('_metadata', 'dm_env/_metadata.py').__version__,
+    version=get_version(),
     description='A Python interface for Reinforcement Learning environments.',
     author='DeepMind',
     license='Apache License, Version 2.0',
