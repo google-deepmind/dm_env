@@ -4,6 +4,9 @@ All significant changes to this project will be documented here.
 
 ## [Unreleased]
 
+* Add an AutoResetEnvironment that calls reset for you if the previous step was
+  the last step.
+
 ## [1.4]
 
 Release date: 2021-02-12
