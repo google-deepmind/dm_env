@@ -4,14 +4,18 @@ All significant changes to this project will be documented here.
 
 ## [Unreleased]
 
-* Add an AutoResetEnvironment that calls reset for you if the previous step was
-  the last step.
+## [1.5]
+
+Release date: 2021-07-12
+
+*   Add an `AutoResetEnvironment` that calls `reset` for you if the previous
+    step was the last step.
 
 ## [1.4]
 
 Release date: 2021-02-12
 
-* Dropped support for Python versions < 3.6.
+*   Dropped support for Python versions < 3.6.
 
 ## [1.3]
 
@@ -52,7 +56,8 @@ Release date: 2019-07-18
 
 *   Initial release.
 
-[Unreleased]: https://github.com/deepmind/dm_env/compare/v1.4...HEAD
+[Unreleased]: https://github.com/deepmind/dm_env/compare/v1.5...HEAD
+[1.5]: https://github.com/deepmind/dm_env/compare/v1.4...v1.5
 [1.4]: https://github.com/deepmind/dm_env/compare/v1.3...v1.4
 [1.3]: https://github.com/deepmind/dm_env/compare/v1.2...v1.3
 [1.2]: https://github.com/deepmind/dm_env/compare/v1.1...v1.2
