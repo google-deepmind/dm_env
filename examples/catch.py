@@ -37,7 +37,7 @@ class Catch(dm_env.Environment):
   The episode terminates when the ball reaches the bottom of the screen.
   """
 
-  def __init__(self, rows=10, columns=5, seed=1):
+  def __init__(self, rows: int = 10, columns: int = 5, seed: int = 1):
     """Initializes a new Catch environment.
 
     Args:
@@ -55,7 +55,7 @@ class Catch(dm_env.Environment):
     self._paddle_y = self._rows - 1
     self._reset_next_step = True
 
-  def reset(self):
+  def reset(self) -> dm_env.TimeStep:
     """Returns the first `TimeStep` of a new episode."""
     self._reset_next_step = False
     self._ball_x = self._rng.randint(self._columns)
@@ -63,7 +63,7 @@ class Catch(dm_env.Environment):
     self._paddle_x = self._columns // 2
     return dm_env.restart(self._observation())
 
-  def step(self, action):
+  def step(self, action: int) -> dm_env.TimeStep:
     """Updates the environment according to the action."""
     if self._reset_next_step:
       return self.reset()
@@ -83,17 +83,22 @@ class Catch(dm_env.Environment):
     else:
       return dm_env.transition(reward=0., observation=self._observation())
 
-  def observation_spec(self):
+  def observation_spec(self) -> specs.BoundedArray:
     """Returns the observation spec."""
-    return specs.BoundedArray(shape=self._board.shape, dtype=self._board.dtype,
-                              name="board", minimum=0, maximum=1)
+    return specs.BoundedArray(
+        shape=self._board.shape,
+        dtype=self._board.dtype,
+        name="board",
+        minimum=0,
+        maximum=1,
+    )
 
-  def action_spec(self):
+  def action_spec(self) -> specs.DiscreteArray:
     """Returns the action spec."""
     return specs.DiscreteArray(
         dtype=int, num_values=len(_ACTIONS), name="action")
 
-  def _observation(self):
+  def _observation(self) -> np.ndarray:
     self._board.fill(0.)
     self._board[self._ball_y, self._ball_x] = 1.
     self._board[self._paddle_y, self._paddle_x] = 1.
