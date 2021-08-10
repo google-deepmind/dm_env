@@ -15,6 +15,8 @@
 # ============================================================================
 """Catch reinforcement learning environment."""
 
+from __future__ import annotations
+
 import dm_env
 from dm_env import specs
 import numpy as np
@@ -55,7 +57,7 @@ class Catch(dm_env.Environment):
     self._paddle_y = self._rows - 1
     self._reset_next_step = True
 
-  def reset(self) -> dm_env.TimeStep:
+  def reset(self) -> dm_env.TimeStep[float, float, np.ndarray]:
     """Returns the first `TimeStep` of a new episode."""
     self._reset_next_step = False
     self._ball_x = self._rng.randint(self._columns)
@@ -63,7 +65,7 @@ class Catch(dm_env.Environment):
     self._paddle_x = self._columns // 2
     return dm_env.restart(self._observation())
 
-  def step(self, action: int) -> dm_env.TimeStep:
+  def step(self, action: int) -> dm_env.TimeStep[float, float, np.ndarray]:
     """Updates the environment according to the action."""
     if self._reset_next_step:
       return self.reset()
