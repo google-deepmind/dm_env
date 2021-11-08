@@ -15,21 +15,14 @@
 # ============================================================================
 """Python RL Environment API."""
 
-# Required for Python < 3.10 https://www.python.org/dev/peps/pep-0563/
-from __future__ import annotations
-
 import abc
 import enum
-from typing import Any, NamedTuple, Generic, Optional, TypeVar
+from typing import Any, NamedTuple
 
 from dm_env import specs
 
-_Reward = TypeVar('_Reward')
-_Discount = TypeVar('_Discount')
-_Observation = TypeVar('_Observation')
 
-
-class TimeStep(NamedTuple, Generic[_Reward, _Discount, _Observation]):
+class TimeStep(NamedTuple):
   """Returned with every call to `step` and `reset` on an environment.
 
   A `TimeStep` contains the data emitted by an environment at each step of
@@ -54,10 +47,11 @@ class TimeStep(NamedTuple, Generic[_Reward, _Discount, _Observation]):
       also valid in place of a scalar array.
   """
 
-  step_type: Any  # TODO(b/194705521): Change this to `StepType` and fix usages.
-  reward: Optional[_Reward]
-  discount: Optional[_Discount]
-  observation: _Observation
+  # TODO(b/143116886): Use generics here when PyType supports them.
+  step_type: Any
+  reward: Any
+  discount: Any
+  observation: Any
 
   def first(self) -> bool:
     return self.step_type == StepType.FIRST
@@ -219,33 +213,21 @@ class Environment(metaclass=abc.ABCMeta):
 # Helper functions for creating TimeStep namedtuples with default settings.
 
 
-def restart(
-    observation: _Observation) -> TimeStep[Any, Any, _Observation]:
+def restart(observation):
   """Returns a `TimeStep` with `step_type` set to `StepType.FIRST`."""
   return TimeStep(StepType.FIRST, None, None, observation)
 
 
-def transition(
-    reward: _Reward,
-    observation: _Observation,
-    discount: _Discount = 1.0,
-) -> TimeStep[_Reward, _Discount, _Observation]:
+def transition(reward, observation, discount=1.0):
   """Returns a `TimeStep` with `step_type` set to `StepType.MID`."""
   return TimeStep(StepType.MID, reward, discount, observation)
 
 
-def termination(
-    reward: _Reward,
-    observation: _Observation,
-) -> TimeStep[_Reward, float, _Observation]:
+def termination(reward, observation):
   """Returns a `TimeStep` with `step_type` set to `StepType.LAST`."""
   return TimeStep(StepType.LAST, reward, 0.0, observation)
 
 
-def truncation(
-    reward: _Reward,
-    observation: _Observation,
-    discount: _Discount = 1.0,
-) -> TimeStep[_Reward, _Discount, _Observation]:
+def truncation(reward, observation, discount=1.0):
   """Returns a `TimeStep` with `step_type` set to `StepType.LAST`."""
   return TimeStep(StepType.LAST, reward, discount, observation)
