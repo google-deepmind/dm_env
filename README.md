@@ -1,5 +1,8 @@
 # `dm_env`: The DeepMind RL Environment API
 
+![PyPI Python version](https://img.shields.io/pypi/pyversions/dm-env)
+![PyPI version](https://badge.fury.io/py/dm-env.svg)
+
 This package describes an interface for Python reinforcement learning (RL)
 environments. It consists of the following core components:
 
