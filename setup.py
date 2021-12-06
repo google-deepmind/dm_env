@@ -42,9 +42,8 @@ setup(
         'numpy',
     ],
     tests_require=[
-        'nose',
+        'pytest',
     ],
-    test_suite='nose.collector',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
