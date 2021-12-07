@@ -356,7 +356,7 @@ class DiscreteArrayTest(parameterized.TestCase):
         ValueError, specs._NUM_VALUES_NOT_POSITIVE.format(num_values)):
       specs.DiscreteArray(num_values=num_values)
 
-  @parameterized.parameters(np.float32, np.object)
+  @parameterized.parameters(np.float32, object)
   def testDtypeNotIntegral(self, dtype):
     with self.assertRaisesWithLiteralMatch(
         ValueError, specs._DTYPE_NOT_INTEGRAL.format(dtype)):
@@ -454,11 +454,11 @@ class StringArrayTest(parameterized.TestCase):
       dict(
           shape=(),
           string_type=str,
-          expected=np.array(u"", dtype=np.object)),
+          expected=np.array(u"", dtype=object)),
       dict(
           shape=(1, 2),
           string_type=bytes,
-          expected=np.array([[b"", b""]], dtype=np.object)),
+          expected=np.array([[b"", b""]], dtype=object)),
   )
   def testGenerateValue(self, shape, string_type, expected):
     spec = specs.StringArray(shape=shape, string_type=string_type)

@@ -364,7 +364,7 @@ class StringArray(Array):
     if string_type not in _VALID_STRING_TYPES:
       raise ValueError(_INVALID_STRING_TYPE.format(string_type))
     self._string_type = string_type
-    super(StringArray, self).__init__(shape=shape, dtype=np.object, name=name)
+    super(StringArray, self).__init__(shape=shape, dtype=object, name=name)
 
   @property
   def string_type(self):
@@ -383,7 +383,7 @@ class StringArray(Array):
     Raises:
       ValueError: if value doesn't conform to this spec.
     """
-    value = np.asarray(value, dtype=np.object)
+    value = np.asarray(value, dtype=object)
     if value.shape != self.shape:
       self._fail_validation(_INVALID_SHAPE, self.shape, value.shape)
     for item in value.flat:
