@@ -36,6 +36,7 @@ setup(
     license='Apache License, Version 2.0',
     keywords='reinforcement-learning python machine learning',
     packages=find_packages(exclude=['examples']),
+    python_requires='>=3.7',
     install_requires=[
         'absl-py',
         'dm-tree',
@@ -55,6 +56,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
     ],
 )

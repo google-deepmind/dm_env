@@ -4,6 +4,8 @@ All significant changes to this project will be documented here.
 
 ## [Unreleased]
 
+*   Add support for Python 3.10.
+
 ## [1.5]
 
 Release date: 2021-07-12
