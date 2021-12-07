@@ -300,7 +300,7 @@ class BoundedArrayTest(parameterized.TestCase):
     spec.validate(test_value)
 
   def testScalarBounds(self):
-    spec = specs.BoundedArray((), np.float, minimum=0.0, maximum=1.0)
+    spec = specs.BoundedArray((), float, minimum=0.0, maximum=1.0)
 
     self.assertIsInstance(spec.minimum, np.ndarray)
     self.assertIsInstance(spec.maximum, np.ndarray)

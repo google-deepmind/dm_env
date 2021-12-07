@@ -170,7 +170,7 @@ class BoundedArray(Array):
   integer types. The following spec will be satisfied by arrays
   with values in the set {0, 1, 2}:
   ```python
-  spec = BoundedArray((3, 4), np.int, minimum=0, maximum=2)
+  spec = BoundedArray((3, 4), int, minimum=0, maximum=2)
   ```
 
   Note that one or both bounds may be infinite. For example, the set of
