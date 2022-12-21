@@ -4,6 +4,10 @@ All significant changes to this project will be documented here.
 
 ## [Unreleased]
 
+## [1.6]
+
+Release date: 2022-12-21
+
 *   Add support for Python 3.10.
 
 ## [1.5]
@@ -58,7 +62,8 @@ Release date: 2019-07-18
 
 *   Initial release.
 
-[Unreleased]: https://github.com/deepmind/dm_env/compare/v1.5...HEAD
+[Unreleased]: https://github.com/deepmind/dm_env/compare/v1.6...HEAD
+[1.6]: https://github.com/deepmind/dm_env/compare/v1.5...v1.6
 [1.5]: https://github.com/deepmind/dm_env/compare/v1.4...v1.5
 [1.4]: https://github.com/deepmind/dm_env/compare/v1.3...v1.4
 [1.3]: https://github.com/deepmind/dm_env/compare/v1.2...v1.3
