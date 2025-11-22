@@ -256,8 +256,12 @@ class BoundedArray(Array):
     return value
 
   def generate_value(self):
-    return (np.ones(shape=self.shape, dtype=self.dtype) *
-            self.dtype.type(self.minimum))
+    """Generate a random value within [minimum, maximum] that matches this spec."""
+    return np.random.uniform(
+        low=self.minimum,
+        high=self.maximum,
+        size=self.shape
+    ).astype(self.dtype)
 
   def __reduce__(self):
     return BoundedArray, (self._shape, self._dtype, self._minimum,
