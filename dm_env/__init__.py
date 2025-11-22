@@ -27,3 +27,4 @@ restart = _environment.restart
 termination = _environment.termination
 transition = _environment.transition
 truncation = _environment.truncation
+from dm_env import specs

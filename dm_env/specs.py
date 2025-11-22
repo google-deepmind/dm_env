@@ -256,8 +256,12 @@ class BoundedArray(Array):
     return value
 
   def generate_value(self):
-    return (np.ones(shape=self.shape, dtype=self.dtype) *
-            self.dtype.type(self.minimum))
+    """Generate a random value within [minimum, maximum] that matches this spec."""
+    return np.random.uniform(
+        low=self.minimum,
+        high=self.maximum,
+        size=self.shape
+    ).astype(self.dtype)
 
   def __reduce__(self):
     return BoundedArray, (self._shape, self._dtype, self._minimum,
@@ -402,3 +406,46 @@ class StringArray(Array):
 
   def __reduce__(self):
     return type(self), (self.shape, self.string_type, self.name)
+
+from dataclasses import is_dataclass, fields
+
+class TreeSpec:
+  """A container for nested spec-like structures, including dataclasses."""
+
+  def __init__(self, structure):
+    self.structure = structure
+
+  def generate_value(self):
+    return _generate_tree_value(self.structure)
+
+  def __repr__(self):
+    return f"TreeSpec({self.structure!r})"
+
+
+def _generate_tree_value(structure):
+  """Recursively generate test values for nested spec structures."""
+  
+  # Case 1 — Array, BoundedArray, DiscreteArray, StringArray
+  if isinstance(structure, Array):
+    return structure.generate_value()
+
+  # Case 2 — dataclass
+  if is_dataclass(structure):
+    return type(structure)(**{
+        f.name: _generate_tree_value(getattr(structure, f.name))
+        for f in fields(structure)
+    })
+
+  # Case 3 — dict
+  if isinstance(structure, dict):
+    return {k: _generate_tree_value(v) for k, v in structure.items()}
+
+  # Case 4 — tuple
+  if isinstance(structure, tuple):
+    return tuple(_generate_tree_value(v) for v in structure)
+
+  # Case 5 — list
+  if isinstance(structure, list):
+    return [_generate_tree_value(v) for v in structure]
+
+  raise TypeError(f"Unsupported element in TreeSpec: {type(structure)}")
