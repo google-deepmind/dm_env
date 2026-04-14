@@ -256,8 +256,12 @@ class BoundedArray(Array):
     return value
 
   def generate_value(self):
-    return (np.ones(shape=self.shape, dtype=self.dtype) *
-            self.dtype.type(self.minimum))
+    if self.shape:
+      # Returns an array if the shape is not empty.
+      return np.full(shape=self.shape, dtype=self.dtype,
+                     fill_value=self.dtype.type(self.minimum))
+    # Returns a scalar if the shape is empty.
+    return self.dtype.type(self.minimum)
 
   def __reduce__(self):
     return BoundedArray, (self._shape, self._dtype, self._minimum,
