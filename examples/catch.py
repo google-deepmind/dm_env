@@ -70,10 +70,10 @@ class Catch(dm_env.Environment):
 
     # Move the paddle.
     dx = _ACTIONS[action]
-    self._paddle_x = np.clip(self._paddle_x + dx, 0, self._columns - 1)
+    self._paddle_x = np.clip(self._paddle_x + dx, 0, self._columns - 1)  # pyrefly: ignore[unsupported-operation]
 
     # Drop the ball.
-    self._ball_y += 1
+    self._ball_y += 1  # pyrefly: ignore[unsupported-operation]
 
     # Check for termination.
     if self._ball_y == self._paddle_y:
