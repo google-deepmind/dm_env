@@ -312,7 +312,7 @@ class DiscreteArray(BoundedArray):
     maximum = num_values - 1
     dtype = np.dtype(dtype)
 
-    if np.min_scalar_type(maximum) > dtype:
+    if maximum > np.iinfo(dtype).max:
       raise ValueError(_DTYPE_OVERFLOW.format(dtype, num_values))
 
     super(DiscreteArray, self).__init__(
