@@ -333,7 +333,7 @@ class DiscreteArray(BoundedArray):
     return self._num_values
 
   def __repr__(self):
-    return self._REPR_TEMPLATE.format(self=self)  # pytype: disable=duplicate-keyword-argument
+    return self._REPR_TEMPLATE.format(self=self)  # pyrefly: ignore[no-matching-overload]
 
   def __reduce__(self):
     return DiscreteArray, (self._num_values, self._dtype, self._name)
@@ -402,7 +402,7 @@ class StringArray(Array):
     return np.full(shape=self.shape, dtype=self.dtype, fill_value=empty_string)
 
   def __repr__(self):
-    return self._REPR_TEMPLATE.format(self=self)  # pytype: disable=duplicate-keyword-argument
+    return self._REPR_TEMPLATE.format(self=self)  # pyrefly: ignore[no-matching-overload]
 
   def __reduce__(self):
     return type(self), (self.shape, self.string_type, self.name)
