@@ -32,6 +32,10 @@ _MINIMUM_INCOMPATIBLE_WITH_SHAPE = '`minimum` is incompatible with `shape`'
 _MAXIMUM_INCOMPATIBLE_WITH_SHAPE = '`maximum` is incompatible with `shape`'
 
 
+def _random_generator(rng):
+  return np.random.default_rng() if rng is None else rng
+
+
 class Array:
   """Describes a numpy array or scalar shape and dtype.
 
@@ -116,6 +120,35 @@ class Array:
   def generate_value(self):
     """Generate a test value which conforms to this spec."""
     return np.zeros(shape=self.shape, dtype=self.dtype)
+
+  def sample(self, rng=None):
+    """Samples a random value of the specified shape and dtype.
+
+    Args:
+      rng: Optional `numpy.random.Generator` for reproducible sampling.
+        By default, a new generator is used.
+
+    Returns:
+      A NumPy array conforming to this spec. Unbounded floating and complex
+      arrays use standard normal draws; integers cover their dtype's range.
+      Unsupported non-numeric dtypes raise TypeError.
+    """
+    rng = _random_generator(rng)
+    if np.issubdtype(self.dtype, np.bool_):
+      return rng.integers(0, 2, size=self.shape, dtype=np.uint8).astype(
+          self.dtype)
+    if np.issubdtype(self.dtype, np.integer):
+      info = np.iinfo(self.dtype)
+      return rng.integers(
+          info.min, info.max, size=self.shape, dtype=self.dtype,
+          endpoint=True)
+    if np.issubdtype(self.dtype, np.floating):
+      return np.asarray(rng.standard_normal(self.shape), dtype=self.dtype)
+    if np.issubdtype(self.dtype, np.complexfloating):
+      sample = (rng.standard_normal(self.shape) +
+                1j * rng.standard_normal(self.shape))
+      return np.asarray(sample, dtype=self.dtype)
+    raise TypeError('Cannot sample non-numeric dtype {}'.format(self.dtype))
 
   def _get_constructor_kwargs(self):
     """Returns constructor kwargs for instantiating a new copy of this spec."""
@@ -259,6 +292,43 @@ class BoundedArray(Array):
     return (np.ones(shape=self.shape, dtype=self.dtype) *
             self.dtype.type(self.minimum))
 
+  def sample(self, rng=None):
+    """Samples from the inclusive bounds, broadcasting per-element limits.
+
+    Integer and boolean bounds are sampled uniformly, including the maximum.
+    Finite floating bounds use a uniform distribution. Infinite floating
+    bounds use a normal or an exponential tail to produce finite samples when
+    possible. A fixed bound always produces that exact value.
+    """
+    rng = _random_generator(rng)
+    minimum = np.broadcast_to(self.minimum, self.shape)
+    maximum = np.broadcast_to(self.maximum, self.shape)
+    if np.issubdtype(self.dtype, np.bool_):
+      return rng.integers(
+          minimum.astype(np.int8), maximum.astype(np.int8),
+          size=self.shape, dtype=np.int8, endpoint=True).astype(self.dtype)
+    if np.issubdtype(self.dtype, np.integer):
+      return rng.integers(
+          minimum, maximum, size=self.shape, dtype=self.dtype, endpoint=True)
+    if not np.issubdtype(self.dtype, np.floating):
+      raise TypeError('Cannot sample bounded dtype {}'.format(self.dtype))
+
+    lower = minimum.astype(np.float64)
+    upper = maximum.astype(np.float64)
+    u = rng.random(self.shape)
+    normal = rng.standard_normal(self.shape)
+    exponential = rng.exponential(size=self.shape)
+    with np.errstate(invalid='ignore', over='ignore'):
+      result = np.where(
+          np.isfinite(lower) & np.isfinite(upper),
+          (1.0 - u) * lower + u * upper,
+          np.where(
+              np.isfinite(lower), lower + exponential,
+              np.where(np.isfinite(upper), upper - exponential, normal)))
+    result = np.where(lower == upper, lower, result)
+    result = np.clip(result, lower, upper)
+    return np.asarray(result, dtype=self.dtype)
+
   def __reduce__(self):
     return BoundedArray, (self._shape, self._dtype, self._minimum,
                           self._maximum, self._name)
@@ -396,6 +466,19 @@ class StringArray(Array):
     """Generate a test value which conforms to this spec."""
     empty_string = self.string_type()  # pylint: disable=not-callable
     return np.full(shape=self.shape, dtype=self.dtype, fill_value=empty_string)
+
+  def sample(self, rng=None):
+    """Samples short random ASCII strings, preserving str/bytes element types."""
+    rng = _random_generator(rng)
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    count = int(np.prod(self.shape))
+    values = []
+    for _ in range(count):
+      length = int(rng.integers(1, 9))
+      indices = rng.integers(0, len(alphabet), size=length)
+      value = ''.join(alphabet[index] for index in indices)
+      values.append(value if self.string_type is str else value.encode('ascii'))
+    return np.asarray(values, dtype=object).reshape(self.shape)
 
   def __repr__(self):
     return self._REPR_TEMPLATE.format(self=self)  # pytype: disable=duplicate-keyword-argument

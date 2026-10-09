@@ -165,5 +165,32 @@ bounds and name of the corresponding action or observation array.
 Note: Actions should almost always specify bounds, e.g. they should use the
 [`BoundedArray` spec][specs] subclass.
 
+### Sampling values from specs
+
+Use `spec.sample()` to generate a random value with the declared shape,
+dtype and bounds. It is available on `Array`, `BoundedArray`, `DiscreteArray`
+and `StringArray` specs. Pass a NumPy random generator for reproducible
+sampling:
+
+```python
+import numpy as np
+from dm_env import specs
+
+action_spec = specs.BoundedArray(
+    shape=(3,), dtype=np.float32, minimum=-1.0, maximum=1.0
+)
+rng = np.random.default_rng(seed=42)
+action = action_spec.sample(rng)
+action_spec.validate(action)
+```
+
+Integer bounds are inclusive, including for `DiscreteArray` action indices.
+Finite floating bounds are sampled uniformly; infinite bounds use finite
+normal or exponential samples where possible. Unbounded numeric `Array`
+specs are sampled according to their dtype, and string specs produce short
+random ASCII strings. Unsupported nonnumeric `Array` dtypes raise
+`TypeError`. The existing `generate_value()` method remains deterministic
+and is unchanged.
+
 [numpy_array]: https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html
 [specs]: ../dm_env/specs.py
