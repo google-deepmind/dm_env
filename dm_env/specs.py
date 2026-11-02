@@ -251,7 +251,7 @@ class BoundedArray(Array):
   def validate(self, value):
     value = np.asarray(value)
     super(BoundedArray, self).validate(value)
-    if (value < self.minimum).any() or (value > self.maximum).any():
+    if not (value >= self.minimum).all() or not (value <= self.maximum).all():
       self._fail_validation(_OUT_OF_BOUNDS, self.minimum, value, self.maximum)
     return value
 

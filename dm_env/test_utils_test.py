@@ -200,6 +200,21 @@ TestInvalidDiscount = _make_test_case_with_expected_failures(
     ]
 )
 
+TestNaNDiscount = _make_test_case_with_expected_failures(
+    name='TestNaNDiscount',
+    timestep_sequence=[
+        FIRST,
+        MID._replace(discount=np.nan),  # NaN is not in the interval [0, 1].
+        MID,
+        LAST,
+    ],
+    expected_failures=[
+        ('test_step_after_reset', ValueError),
+        ('test_step_on_fresh_environment', ValueError),
+        ('test_longer_action_sequence', ValueError),
+    ]
+)
+
 TestInvalidObservation = _make_test_case_with_expected_failures(
     name='TestInvalidObservation',
     timestep_sequence=[
