@@ -289,6 +289,20 @@ class BoundedArrayTest(parameterized.TestCase):
           specs._OUT_OF_BOUNDS % (spec.minimum, value, spec.maximum)):
         spec.validate(value)
 
+  @parameterized.parameters(
+      dict(shape=(), minimum=0., maximum=1., value=np.nan),
+      dict(shape=(2,), minimum=-1., maximum=1., value=[0., np.nan]),
+      dict(shape=(2,), minimum=[-1., 0.], maximum=[0., 1.],
+           value=[np.nan, 0.5]),
+      dict(shape=(), minimum=-np.inf, maximum=np.inf, value=np.nan),
+  )
+  def testValidateRejectsNaN(self, shape, minimum, maximum, value):
+    spec = specs.BoundedArray(shape, np.float64, minimum, maximum)
+    value = np.asarray(value, dtype=spec.dtype)
+    with self.assertRaisesWithLiteralMatch(
+        ValueError, specs._OUT_OF_BOUNDS % (spec.minimum, value, spec.maximum)):
+      spec.validate(value)
+
   def testValidateReturnsValue(self):
     spec = specs.BoundedArray([1], np.int32, minimum=0, maximum=1)
     validated_value = spec.validate(np.array([0], dtype=np.int32))
