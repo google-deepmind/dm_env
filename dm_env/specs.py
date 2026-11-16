@@ -400,5 +400,11 @@ class StringArray(Array):
   def __repr__(self):
     return self._REPR_TEMPLATE.format(self=self)  # pytype: disable=duplicate-keyword-argument
 
+  def __eq__(self, other):
+    if not isinstance(other, StringArray):
+      return False
+    return (super(StringArray, self).__eq__(other) and
+            self.string_type == other.string_type)
+
   def __reduce__(self):
     return type(self), (self.shape, self.string_type, self.name)

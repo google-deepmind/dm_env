@@ -486,5 +486,30 @@ class StringArrayTest(parameterized.TestCase):
     spec = specs.StringArray(shape=shape, string_type=string_type, name=name)
     self.assertEqual(pickle.loads(pickle.dumps(spec)), spec)
 
+  @parameterized.parameters(
+      dict(shape=()), dict(shape=(2,)), dict(shape=(2, 3)))
+  def testEqual(self, shape):
+    spec_1 = specs.StringArray(shape=shape, string_type=bytes, name="foo")
+    spec_2 = specs.StringArray(shape=shape, string_type=bytes, name="bar")
+    self.assertEqual(spec_1, spec_2)
+
+  @parameterized.parameters(
+      dict(shape=()), dict(shape=(2,)), dict(shape=(2, 3)))
+  def testNotEqualDifferentStringType(self, shape):
+    spec_1 = specs.StringArray(shape=shape, string_type=str)
+    spec_2 = spec_1.replace(string_type=bytes)
+    self.assertNotEqual(spec_1, spec_2)
+    self.assertNotEqual(spec_2, spec_1)
+
+  def testNotEqualDifferentShape(self):
+    spec_1 = specs.StringArray(shape=(2,), string_type=str)
+    spec_2 = specs.StringArray(shape=(3,), string_type=str)
+    self.assertNotEqual(spec_1, spec_2)
+
+  def testIsUnhashable(self):
+    spec = specs.StringArray(shape=(2,))
+    with self.assertRaisesRegex(TypeError, "unhashable type"):
+      hash(spec)
+
 if __name__ == "__main__":
   absltest.main()
