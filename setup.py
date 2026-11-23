@@ -39,9 +39,16 @@ setup(
     python_requires='>=3.7',
     install_requires=[
         'absl-py',
-        'dm-tree',
         'numpy',
     ],
+    # dm-tree is only used by dm_env.test_utils (not imported by dm_env
+    # itself), so keep it optional to avoid blocking installs on newer Python
+    # versions where dm-tree wheels are unavailable.
+    extras_require={
+        'test_utils': [
+            'dm-tree',
+        ],
+    },
     tests_require=[
         'pytest',
     ],

@@ -51,8 +51,15 @@ absltest.TestCase methods aren't statically available here, only once mixed in.
 
 from absl import logging
 import dm_env
-import tree
 from dm_env import _abstract_test_mixin
+try:
+  import tree  # pylint: disable=g-import-not-at-top
+except ImportError as e:
+  raise ImportError(
+      "dm_env.test_utils requires dm-tree. "
+      "Install with: pip install 'dm-env[test_utils]'."
+  ) from e
+
 _STEP_NEW_ENV_MUST_RETURN_FIRST = (
     "calling step() on a fresh environment must produce a step with "
     "step_type FIRST, got {}")
@@ -168,7 +175,7 @@ class EnvironmentTestMixin(_abstract_test_mixin.TestMixin):
         return array_spec.validate(item)
       except ValueError as e:
         raise ValueError("Value at path {!r} failed validation: {}."
-                         .format("/".join(map(str, path)), e))
+                         .format("/".join(map(str, path)), e)) from e
     tree.map_structure_with_path(validate, value, spec)
 
   def assertValidObservation(self, observation):

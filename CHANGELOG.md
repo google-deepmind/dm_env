@@ -4,6 +4,9 @@ All significant changes to this project will be documented here.
 
 ## [Unreleased]
 
+*   Moved `dm-tree` from required dependencies to the optional `test_utils`
+    extra (`pip install 'dm-env[test_utils]'`).
+
 ## [1.6]
 
 Release date: 2022-12-21

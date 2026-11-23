@@ -28,6 +28,12 @@ using the `dm_env` interface.
 pip install dm-env
 ```
 
+To use `dm_env.test_utils`, install with the `test_utils` extra:
+
+```bash
+pip install 'dm-env[test_utils]'
+```
+
 Note that from version 1.4 onwards, we support Python 3.6+ only.
 
 You can also install it directly from our GitHub repository using `pip`:
@@ -49,6 +55,7 @@ pip install /path/to/local/dm_env/
 
 To cite this repository:
 
+<!-- disableFinding(SNIPPET_INVALID_LANGUAGE) -->
 ```bibtex
 @misc{dm_env2019,
   author={Alistair Muldal and
