@@ -2,4 +2,4 @@ absl-py==1.0.0
 dm-tree==0.1.6
 numpy==1.21.6; python_version < '3.8'
 numpy==1.22.0; python_version >= '3.8'
-pytest==6.2.5
+pytest==9.0.3
