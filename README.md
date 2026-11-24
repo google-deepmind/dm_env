@@ -34,12 +34,12 @@ To use `dm_env.test_utils`, install with the `test_utils` extra:
 pip install 'dm-env[test_utils]'
 ```
 
-Note that from version 1.4 onwards, we support Python 3.6+ only.
+Note that from version 1.6 onwards, we support Python 3.7+ only.
 
 You can also install it directly from our GitHub repository using `pip`:
 
 ```bash
-pip install git+git://github.com/deepmind/dm_env.git
+pip install git+https://github.com/google-deepmind/dm_env.git
 ```
 
 or alternatively by checking out a local copy of our repository and running:
@@ -66,6 +66,6 @@ To cite this repository:
       Siqi Liu},
   title={dm\_env: A Python interface for reinforcement learning environments},
   year={2019},
-  url={http://github.com/deepmind/dm_env}
+  url={https://github.com/google-deepmind/dm_env}
 }
 ```
